@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "deploy": "vercel --prod"
   },
   "author": "Kami Karras",
   "license": "ISC",
