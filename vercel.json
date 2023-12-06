@@ -1,10 +1,10 @@
 {
     "version": 2,
-    "functions": [
+    "functions": 
         {
             "index.js": {
                 "memory": 3008
             }
         }
-    ]
+    
 }
