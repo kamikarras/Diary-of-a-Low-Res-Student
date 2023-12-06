@@ -42,4 +42,4 @@ socketServer.on("connect", (socket) => {
   });
 });
 
-module.exports = socketServer;
+module.exports = server;
