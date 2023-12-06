@@ -158,16 +158,6 @@ const open = () => {
   const clock = new THREE.Clock();
   console.log(clock);
 
-//   const tick = () => {
-//     controls.update();
-//     renderer.render(scene, camera);
-
-//     window.requestAnimationFrame(tick);
-//   };
-
-
-
-
 
 
 // MODEL WITH ANIMATIONS
