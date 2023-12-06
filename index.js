@@ -28,8 +28,7 @@ const socketServer = new io.Server(server, {
 let users = [];
 
 let port = process.env.PORT || 5173;
-console.log('env', process.env)
-console.log('env', process.env.PORT)
+
 server.listen(port, () => {
   console.log("listening at ", port);
 });
