@@ -7,7 +7,7 @@ import { CharacterControls } from './characterControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:5173/");
+const socket = io.connect("https://diary-of-a-low-res-student-4v2x9ch5h-kamikarras.vercel.app/");
 
 const loader = new GLTFLoader();
 
