@@ -4,19 +4,22 @@
   "description": "A digital diary of my experience as an NYU Low Res Student.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start:watch": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "vite",
+    "build": "vite build",
+    "server": "nodemon index.js"
   },
   "author": "Kami Karras",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "vite-express": "^0.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "vite": "^5.0.5"
   }
 }
