@@ -1,26 +1,40 @@
-
-let express = require('express')
-let app = express()
-
-let users = []
-
-app.use('/', express.static('public'))
-
+//Initialize the express 'app' object
+let express = require("express");
 let http = require("http");
-let server = http.createServer(app);
+let io = require("socket.io");
+let cors = require("cors");
 
-let port = process.env.PORT || 3000;
-server.listen(port, ()=> {
-console.log('listening at ', port);
+// express
+let app = express();
+app.use(cors({
+    origin: true,
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
+
+const server = http.createServer(app)
+
+// Socket
+const socketServer = new io.Server(server, {
+    cors: {
+        origin: true,
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true,
+    }
 });
 
-let io = require('socket.io');
-io = new io.Server(server);
+let users = [];
 
-io.on('connect', (socket) => {
-    socket.on('name', data=>{
-        users.push({'id':socket.id, 'name':data.name,'feeling':data.feeling})
-        console.log(users)
-    })
+let port = process.env.PORT || 5173;
+server.listen(port, () => {
+  console.log("listening at ", port);
+});
 
-    console.log('socket connected : ' + socket.id);})
+socketServer.on("connect", (socket) => {
+  socket.on("name", (data) => {
+    users.push({ id: socket.id, name: data.name, feeling: data.feeling });
+    console.log(users);
+  });
+
+  console.log("socket connected : " + socket.id);
+});
