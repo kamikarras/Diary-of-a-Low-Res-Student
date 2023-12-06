@@ -40,5 +40,3 @@ socketServer.on("connect", (socket) => {
     console.log(users);
   });
 });
-
-module.exports = socketServer;
