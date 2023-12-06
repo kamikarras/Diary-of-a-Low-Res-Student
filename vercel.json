@@ -1,13 +1,10 @@
 {
     "version": 2,
-    "builds": [
+    "functions": [
         {
-            "src": "index.js",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "*.html",
-            "use": "@vercel/static"
+            "index.js": {
+                "memory": 3008
+            }
         }
     ]
 }
