@@ -1,43 +1,43 @@
-//Initialize the express 'app' object
-let express = require("express");
-let http = require("http");
-let io = require("socket.io");
-let cors = require("cors");
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
-// express
-let app = express();
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// express is not used as Vercel Edge Functions are not traditional web servers
 
-const server = http.createServer(app);
-
-// Socket
-const socketServer = new io.Server(server, {
-  cors: {
-    origin: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  },
-});
+const server = createServer();
+const socketServer = new Server(server);
 
 let users = [];
 
-let port = process.env.PORT || 5173;
+module.exports = (req, res) => {
+  // Vercel Edge Functions entry point
 
-server.listen(port, () => {
-  console.log("listening at ", port);
-});
+  // Handle CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-socketServer.on("connect", (socket) => {
-  console.log("client has connected via socket : " + socket.id);
+  if (req.method === 'OPTIONS') {
+    res.status(200).send('OK');
+    return;
+  }
 
-  socket.on("name", (data) => {
-    users.push({ id: socket.id, name: data.name, feeling: data.feeling });
-    console.log(users);
+  // Handle the Socket.IO connection
+  socketServer.on('connect', (socket) => {
+    console.log('client has connected via socket: ' + socket.id);
+
+    socket.on('name', (data) => {
+      users.push({ id: socket.id, name: data.name, feeling: data.feeling });
+      console.log(users);
+    });
   });
+
+  // Your other routes and logic can go here
+
+  // Handle all other routes with a 404 response
+  res.status(404).send('Not Found');
+};
+
+// Listen on a random port for Vercel Edge Function
+server.listen(0, () => {
+  console.log('Server listening on port ' + server.address().port);
 });
