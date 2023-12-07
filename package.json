@@ -4,9 +4,10 @@
   "description": "A digital diary of my experience as an NYU Low Res Student.",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "vite",
     "build": "vite build",
-    "server": "nodemon index.js",
+    "server": "nodemon server.js",
     "deploy": "vercel --prod"
   },
   "author": "Kami Karras",
