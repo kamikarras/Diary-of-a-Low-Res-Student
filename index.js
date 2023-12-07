@@ -35,9 +35,11 @@ module.exports = (req, res) => {
 
   // Handle all other routes with a 404 response
   res.status(404).send('Not Found');
-};
 
-// Listen on a random port for Vercel Edge Function
+  // Listen on a random port for Vercel Edge Function
 server.listen(0, () => {
   console.log('Server listening on port ' + server.address().port);
 });
+};
+
+
