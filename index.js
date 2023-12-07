@@ -1,45 +1,44 @@
-const { createServer } = require('http');
-const { Server } = require('socket.io');
+let express = require("express");
+let http = require("http");
+let io = require("socket.io");
+let cors = require("cors");
 
-// express is not used as Vercel Edge Functions are not traditional web servers
+// express
+let app = express();
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-const server = createServer();
-const socketServer = new Server(server);
+const server = http.createServer(app);
+
+// Socket
+const socketServer = new io.Server(server, {
+  cors: {
+    origin: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  },
+});
 
 let users = [];
 
-module.exports = (req, res) => {
-  // Vercel Edge Functions entry point
+let port = process.env.PORT || 5173;
 
-  // Handle CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, POST, GET');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).send('OK');
-    return;
-  }
-
-  // Handle the Socket.IO connection
-  socketServer.on('connect', (socket) => {
-    console.log('client has connected via socket: ' + socket.id);
-
-    socket.on('name', (data) => {
-      users.push({ id: socket.id, name: data.name, feeling: data.feeling });
-      console.log(users);
-    });
-  });
-
-  // Your other routes and logic can go here
-
-  // Handle all other routes with a 404 response
-  res.status(404).send('Not Found');
-
-  // Listen on a random port for Vercel Edge Function
-server.listen(0, () => {
-  console.log('Server listening on port ' + server.address().port);
+server.listen(port, () => {
+  console.log("listening at ", port);
 });
-};
 
+socketServer.on("connect", (socket) => {
+  console.log("client has connected via socket : " + socket.id);
 
+  socket.on("name", (data) => {
+    users.push({ id: socket.id, name: data.name, feeling: data.feeling });
+    console.log(users);
+  });
+});
+
+module.exports = server;
