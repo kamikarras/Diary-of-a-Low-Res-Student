@@ -7,9 +7,10 @@ import { CharacterControls } from './characterControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-const socket = io.connect("https://diary-of-a-low-res-student-kamikarras.vercel.app/api");
+const socket = io.connect("http://localhost:5173");
 
 const loader = new GLTFLoader();
+let nameObj = {}
 
 // Load a glTF resource
 
@@ -36,6 +37,8 @@ window.addEventListener("resize", () => {
 const callButton = document.getElementById("intro-button");
 
 //input form
+const nameLabel = document.createElement("h1");
+nameLabel.innerText = "What is your name?"
 const nameInput = document.createElement("input");
 nameInput.setAttribute("type", "text");
 const submitInput = document.createElement("input");
@@ -51,14 +54,15 @@ callButton.addEventListener("mousedown", () => {
     // tick()
     document.body.innerHTML = "";
 
+    document.body.appendChild(nameLabel);
     document.body.appendChild(nameInput);
     document.body.appendChild(submitInput);
-  }, 1150);
+  }, 11500);
 });
 
 submitInput.addEventListener("click", () => {
   let myName = nameInput.value;
-  let nameObj = { name: myName, feeling: "strong" };
+nameObj = { name: myName, feeling: "strong" };
 
   //Send the message object to the server
   socket.emit("name", nameObj);
@@ -97,6 +101,7 @@ const open = () => {
   scene.add(camera);
   document.body.removeChild(nameInput);
   document.body.removeChild(submitInput);
+  nameLabel.innerText = nameObj.name + " the " + nameObj.feeling
 
   // Controls
   const controls = new OrbitControls(camera, canvas);
