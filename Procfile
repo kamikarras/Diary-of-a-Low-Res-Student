@@ -1,0 +1,1 @@
+web: cd  lib && npm start
