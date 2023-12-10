@@ -167,7 +167,7 @@ submitInput.addEventListener("click", () => {
 
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
-  socket = io.connect("http://localhost:5173");
+  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
