@@ -7,7 +7,10 @@ import { CharacterControls } from './characterControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-const socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
+
+// Update url when deploying 
+// https://ima-sockets-bec2149551cd.herokuapp.com/
+const socket = io.connect("http://localhost:7890");
 
 const loader = new GLTFLoader();
 
@@ -42,7 +45,7 @@ const submitInput = document.createElement("input");
 submitInput.setAttribute("type", "submit");
 
 callButton.addEventListener("mousedown", () => {
-  callButton.src = "./static/call-button-pressed.svg";
+  callButton.src = "./assets/call-button-pressed.svg";
   kamiTest.style.display = "block";
   kamiTest.play();
   kamiTest.style.objectFit = "fill";
@@ -66,7 +69,7 @@ submitInput.addEventListener("click", () => {
 });
 
 callButton.addEventListener("mouseup", () => {
-  callButton.src = "./static/call-button-unpressed.svg";
+  callButton.src = "./assets/call-button-unpressed.svg";
 });
 const open = () => {
   const sizes = {
