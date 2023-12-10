@@ -1,6 +1,8 @@
+/** @type {import('vite').UserConfig} */
+
 export default {
     root: 'src/',
-    publicDir: '../static/',
+    publicDir: '../public/',
     base: './',
     server:
     {

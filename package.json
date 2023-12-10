@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "server": "nodemon server.js",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "preview": " vite build && vite preview"
   },
   "author": "Kami Karras",
   "license": "ISC",

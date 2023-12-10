@@ -58,7 +58,7 @@ const callButton = document.getElementById("intro-button");
 
 
 callButton.addEventListener("mousedown", () => {
-  callButton.src = "./static/call-button-pressed.svg";
+  callButton.src = "./assets/call-button-pressed.svg";
   kamiTest.style.display = "block";
   kamiTest.play();
   kamiTest.style.objectFit = "fill";
@@ -83,7 +83,7 @@ callButton.addEventListener("mousedown", () => {
 });
 
 callButton.addEventListener("mouseup", () => {
-  callButton.src = "./static/call-button-unpressed.svg";
+  callButton.src = "./assets/call-button-unpressed.svg";
 });
 
 
@@ -166,7 +166,7 @@ submitInput.addEventListener("click", () => {
 
 
 const open = () => {
-
+// https://ima-sockets-bec2149551cd.herokuapp.com/
   socket = io.connect("http://localhost:5173");
 
   socket.on("connect", () => {
