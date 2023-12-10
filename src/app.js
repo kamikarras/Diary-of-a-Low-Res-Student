@@ -167,6 +167,7 @@ submitInput.addEventListener("click", () => {
 
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
+// "http://localhost:5173"
   socket = io.connect("http://localhost:5173");
 
   socket.on("connect", () => {
@@ -242,10 +243,11 @@ const open = () => {
 // MODEL WITH ANIMATIONS
 var characterControls
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
+dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/v1/decoders/' );
+dracoLoader.setDecoderConfig({type:'js'})
 loader.setDRACOLoader( dracoLoader );
 
-loader.load('models/kami.glb', function (gltf) {
+loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
     model = gltf.scene;
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
@@ -299,7 +301,7 @@ document.addEventListener('keyup', (event) => {
     if(event.key.toLowerCase()=='w'){
       userObj.keys.w = false
     }else if(event.key.toLowerCase()=='a'){
-      userObj.keys.a = false.keys
+      userObj.keys.a = false
     }else if(event.key.toLowerCase()=='s'){
       userObj.keys.s = false
     }else if(event.key.toLowerCase()=='d'){
@@ -342,53 +344,7 @@ console.log('model pos: '+ model.position)
   socket.emit('data',userObj)
   userObj.shift= false
 
-  socket.on('usersAll', data=>{
-    // console.log(users)
-      data.forEach(user=>{
-        if(!ids.includes(user.id)){
-          ids.push(user.id)
-          loader.load('models/kami.glb', function (gltf) {
-           user.model = gltf.scene;
-            user.model.traverse(function (object) {
-                if (object.isMesh) object.castShadow = true;
-            });
-        
-            user.position = user.model.position
-            
-            scene.add(user.model);
-
-
-            user.gltfAnimations = gltf.animations;
-            user.mixer = new THREE.AnimationMixer(user.model);
-            user.animationsMap = new Map()
-            user.gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
-            user.animationsMap.set(a.name, user.mixer.clipAction(a))
-            })
-            user.guestControls = new GuestControls(user.model, user.mixer, user.animationsMap, 'idle')
-
-
-    
-        });
-    
-          users.push(user)
-        }
-        if(user.id!=myId){
-          users.forEach(u=>{
-            if(user.id==u.id){
-              console.log(u.model)
-              u.position = user.position
-              u.model.position.x = user.position.x
-              u.model.position.y = user.position.y
-              u.model.position.z = user.position.z
-              u.shift = user.shift
-
-              u.keys=user.keys
-            } 
-          })
-        }
-      })
-    
-    })
+  
 }
 
 }
@@ -401,7 +357,63 @@ animate();
 
 
 //   tick();
+socket.on('usersAll', data=>{
+  // console.log(users)
+    data.forEach(user=>{
+      if(!ids.includes(user.id)){ 
+        ids.push(user.id)
+        loader.load(`models/${user.feeling}.glb`, function (gltf) {
+         user.model = gltf.scene;
+          user.model.traverse(function (object) {
+              if (object.isMesh) object.castShadow = true;
+          });
+      
+          user.position = user.model.position
+          
+          scene.add(user.model);
+
+
+          user.gltfAnimations = gltf.animations;
+          user.mixer = new THREE.AnimationMixer(user.model);
+          user.animationsMap = new Map()
+          user.gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+          user.animationsMap.set(a.name, user.mixer.clipAction(a))
+          })
+          user.guestControls = new GuestControls(user.model, user.mixer, user.animationsMap, 'idle')
+
+
+  
+      });
+  
+        users.push(user)
+      }
+      if(user.id!=myId){
+        users.forEach(u=>{
+          if(user.id==u.id && u.model){
+            console.log(u.model)
+            u.position = user.position
+            u.model.position.x = user.position.x
+            u.model.position.y = user.position.y
+            u.model.position.z = user.position.z
+            u.shift = user.shift
+
+            u.keys=user.keys
+          } 
+        })
+      }
+    })
+  
+  })
+  socket.on('remove',id=>{
+    for(let i=0;i<users.length; i++){
+      if(users[i].id==id){
+        scene.remove(users[i].model)
+        users.splice(i,1)
+      }
+    }
+  })
 };
+
 
 
   
