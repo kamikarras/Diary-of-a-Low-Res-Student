@@ -4,13 +4,23 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { CharacterControls } from './characterControls';
+import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
+import { RGB_BPTC_UNSIGNED_Format } from "three";
 
 let socketOpen=false;
 const loader = new GLTFLoader();
-let userObj = {}
+let userObj = {
+  keys:{
+    w: false,
+    a: false,
+    s: false,
+    d: false
+  },
+  shift:false
+}
 
 let socket = null
 
@@ -264,13 +274,37 @@ document.addEventListener('keydown', (event) => {
     keyDisplayQueue.down(event.key)
     if (event.shiftKey && characterControls) {
         characterControls.switchRunToggle()
+        userObj.shift = true
+        console.log(userObj.shift)
     } else {
         (keysPressed)[event.key.toLowerCase()] = true
+        if(event.key.toLowerCase()=='w'){
+          userObj.keys.w = true
+        }else if(event.key.toLowerCase()=='a'){
+          userObj.keys.a = true
+        }else if(event.key.toLowerCase()=='s'){
+          userObj.keys.s = true
+        }else if(event.key.toLowerCase()=='d'){
+          userObj.keys.d = true
+        }
+        
     }
 }, false);
 document.addEventListener('keyup', (event) => {
+  if (event.shiftKey && characterControls) {
+
+  }
     keyDisplayQueue.up(event.key);
     (keysPressed)[event.key.toLowerCase()] = false
+    if(event.key.toLowerCase()=='w'){
+      userObj.keys.w = false
+    }else if(event.key.toLowerCase()=='a'){
+      userObj.keys.a = false.keys
+    }else if(event.key.toLowerCase()=='s'){
+      userObj.keys.s = false
+    }else if(event.key.toLowerCase()=='d'){
+      userObj.keys.d = false
+    }
 }, false);
 
 
@@ -286,6 +320,17 @@ function animate() {
     if (characterControls) {
         characterControls.update(mixerUpdateDelta, keysPressed);
     }
+    users.forEach(user=>{
+      if(user.guestControls){
+        if(user.shift==true){
+          user.guestControls.switchRunToggle()
+          user.shift = false
+
+        }
+        user.guestControls.update(mixerUpdateDelta, user.keys);
+      }
+    })
+
     controls.update()
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -295,6 +340,8 @@ if(socket && model){
   userObj.position=model.position
 console.log('model pos: '+ model.position)
   socket.emit('data',userObj)
+  userObj.shift= false
+
   socket.on('usersAll', data=>{
     // console.log(users)
       data.forEach(user=>{
@@ -311,13 +358,13 @@ console.log('model pos: '+ model.position)
             scene.add(user.model);
 
 
-            const gltfAnimations = gltf.animations;
-            const mixer = new THREE.AnimationMixer(model);
-            const animationsMap = new Map()
-            gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
-            animationsMap.set(a.name, mixer.clipAction(a))
-    })
-
+            user.gltfAnimations = gltf.animations;
+            user.mixer = new THREE.AnimationMixer(user.model);
+            user.animationsMap = new Map()
+            user.gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+            user.animationsMap.set(a.name, user.mixer.clipAction(a))
+            })
+            user.guestControls = new GuestControls(user.model, user.mixer, user.animationsMap, 'idle')
 
 
     
@@ -333,7 +380,10 @@ console.log('model pos: '+ model.position)
               u.model.position.x = user.position.x
               u.model.position.y = user.position.y
               u.model.position.z = user.position.z
-            }
+              u.shift = user.shift
+
+              u.keys=user.keys
+            } 
           })
         }
       })
