@@ -7,12 +7,22 @@ import { CharacterControls } from './characterControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:5173");
 
+let socketOpen=false;
 const loader = new GLTFLoader();
-let nameObj = {}
+let userObj = {}
 
-// Load a glTF resource
+let socket = null
+
+let model = null
+
+let models = []
+let users = []
+let ids = []
+let myId = ''
+
+//-------------------intro page--------------------------------
+
 
 //flower svg
 const flower = document.querySelector("#intro-ground");
@@ -36,13 +46,6 @@ window.addEventListener("resize", () => {
 //call button
 const callButton = document.getElementById("intro-button");
 
-//input form
-const nameLabel = document.createElement("h1");
-nameLabel.innerText = "What is your name?"
-const nameInput = document.createElement("input");
-nameInput.setAttribute("type", "text");
-const submitInput = document.createElement("input");
-submitInput.setAttribute("type", "submit");
 
 callButton.addEventListener("mousedown", () => {
   callButton.src = "./static/call-button-pressed.svg";
@@ -51,28 +54,120 @@ callButton.addEventListener("mousedown", () => {
   kamiTest.style.objectFit = "fill";
   setTimeout(() => {
     flower.classList.add("scaleUp");
-    // tick()
     document.body.innerHTML = "";
-
     document.body.appendChild(nameLabel);
     document.body.appendChild(nameInput);
+    document.body.appendChild(document.createElement('br'));
+    document.body.appendChild(feelingInputStrong);
+    document.body.appendChild(feelingLabelStrong);
+    document.body.appendChild(feelingInputKind);
+    document.body.appendChild(feelingLabelKind);
+    document.body.appendChild(feelingInputCreative);
+    document.body.appendChild(feelingLabelCreative);
+    document.body.appendChild(document.createElement('br'));
     document.body.appendChild(submitInput);
-  }, 11500);
-});
-
-submitInput.addEventListener("click", () => {
-  let myName = nameInput.value;
-nameObj = { name: myName, feeling: "strong" };
-
-  //Send the message object to the server
-  socket.emit("name", nameObj);
-  open();
+  }, 
+  // 11500
+  0
+  );
 });
 
 callButton.addEventListener("mouseup", () => {
   callButton.src = "./static/call-button-unpressed.svg";
 });
+
+
+
+
+
+
+//-----------------input form-------------------------
+
+
+
+
+const nameLabel = document.createElement("h1");
+nameLabel.innerText = "What is your name?"
+
+const nameInput = document.createElement("input");
+nameInput.setAttribute("type", "text");
+
+const feelingInputStrong = document.createElement("input")
+feelingInputStrong.setAttribute("type", "radio")
+feelingInputStrong.name = "feeling"
+feelingInputStrong.id = 'strong'
+feelingInputStrong.value = 'strong'
+
+const feelingLabelStrong = document.createElement('label')
+feelingLabelStrong.for='strong'
+feelingLabelStrong.innerText='strong'
+
+const feelingInputKind = document.createElement("input")
+feelingInputKind.setAttribute("type", "radio")
+feelingInputKind.name = "feeling"
+feelingInputKind.id = 'kind'
+feelingInputKind.value = 'kind'
+
+const feelingLabelKind = document.createElement('label')
+feelingLabelKind.for='kind'
+feelingLabelKind.innerText = 'kind'
+
+const feelingInputCreative = document.createElement("input")
+feelingInputCreative.setAttribute("type", "radio")
+feelingInputCreative.name = "feeling"
+feelingInputCreative.id = 'creative'
+feelingInputCreative.value = 'creative'
+
+const feelingLabelCreative = document.createElement('label')
+feelingLabelCreative.for='creative'
+feelingLabelCreative.innerText='creative'
+
+
+const submitInput = document.createElement("input");
+submitInput.setAttribute("type", "submit");
+
+
+submitInput.addEventListener("click", () => {
+  const radioButtons = document.querySelectorAll('input[name="feeling"]');
+  radioButtons.forEach(radio=>{
+    if(radio.checked==true){
+      console.log(radio)
+      userObj.feeling = radio.value
+    }
+  })
+  let myName = nameInput.value;
+  userObj.name = myName
+
+
+  document.body.innerHTML = ''
+
+  const displayName = document.createElement('h1')
+  displayName.innerText = userObj.name + " the " + userObj.feeling
+  displayName.classList.add('displayName')
+  document.body.appendChild(displayName)
+
+ 
+  
+
+  open();
+});
+
+
+
+
 const open = () => {
+
+  socket = io.connect("http://localhost:5173");
+
+  socket.on("connect", () => {
+    console.log(`connected via socket`);
+    myId=socket.id
+    userObj.id= socket.id
+    ids.push(myId)
+  });
+
+  socketOpen = true
+  
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -84,6 +179,8 @@ const open = () => {
 
   // Scene
   const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xDDDDFF)
+
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
   });
@@ -99,45 +196,12 @@ const open = () => {
   camera.position.y = 2;
   camera.position.z = 5;
   scene.add(camera);
-  document.body.removeChild(nameInput);
-  document.body.removeChild(submitInput);
-  nameLabel.innerText = nameObj.name + " the " + nameObj.feeling
+
+ 
 
   // Controls
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
-
-//   loader.load(
-//     // resource URL
-//     "models/character.glb",
-//     // called when the resource is loaded
-//     function (gltf) {
-//       scene.add(gltf.scene);
-
-//       gltf.animations; // Array<THREE.AnimationClip>
-//       gltf.scene; // THREE.Group
-//       gltf.scenes; // Array<THREE.Group>
-//       gltf.cameras; // Array<THREE.Camera>
-//       gltf.asset; // Object
-//     },
-//     // called while loading is progressing
-//     function (xhr) {
-//       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-//     },
-//     // called when loading has errors
-//     function (error) {
-//       console.log("An error happened");
-//     }
-//   );
-
-  //placeholder character
-//   const box = new THREE.Mesh(
-//     new THREE.BoxGeometry(1, 1, 1),
-//     new THREE.MeshStandardMaterial({ color: "#b2b6b1" })
-//   );
-//   box.position.y = 0.5;
-//   box.castShadow = true;
-//   scene.add(box);
 
   //floor
   const floor = new THREE.Mesh(
@@ -171,21 +235,17 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
 loader.setDRACOLoader( dracoLoader );
 
-new GLTFLoader().load('models/kami.glb', function (gltf) {
-    const model = gltf.scene;
+loader.load('models/kami.glb', function (gltf) {
+    model = gltf.scene;
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
     });
-    let nameGeo = new TextGeometry('hello',{
-        size: 80,
-		height: 5,
 
-    })
-
-    let nameText = new THREE.Mesh(nameGeo, new THREE.MeshBasicMaterial({color:'red'}))
-
-    scene.add(nameText)
+    userObj.position = model.position
     scene.add(model);
+
+
+    socket.emit("user", userObj);
 
     const gltfAnimations = gltf.animations;
     const mixer = new THREE.AnimationMixer(model);
@@ -213,8 +273,15 @@ document.addEventListener('keyup', (event) => {
     (keysPressed)[event.key.toLowerCase()] = false
 }, false);
 
+
+
+
+
+
+
 // ANIMATE
 function animate() {
+
     let mixerUpdateDelta = clock.getDelta();
     if (characterControls) {
         characterControls.update(mixerUpdateDelta, keysPressed);
@@ -222,6 +289,58 @@ function animate() {
     controls.update()
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
+
+
+if(socket && model){
+  userObj.position=model.position
+console.log('model pos: '+ model.position)
+  socket.emit('data',userObj)
+  socket.on('usersAll', data=>{
+    // console.log(users)
+      data.forEach(user=>{
+        if(!ids.includes(user.id)){
+          ids.push(user.id)
+          loader.load('models/kami.glb', function (gltf) {
+           user.model = gltf.scene;
+            user.model.traverse(function (object) {
+                if (object.isMesh) object.castShadow = true;
+            });
+        
+            user.position = user.model.position
+            
+            scene.add(user.model);
+
+
+            const gltfAnimations = gltf.animations;
+            const mixer = new THREE.AnimationMixer(model);
+            const animationsMap = new Map()
+            gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+            animationsMap.set(a.name, mixer.clipAction(a))
+    })
+
+
+
+    
+        });
+    
+          users.push(user)
+        }
+        if(user.id!=myId){
+          users.forEach(u=>{
+            if(user.id==u.id){
+              console.log(u.model)
+              u.position = user.position
+              u.model.position.x = user.position.x
+              u.model.position.y = user.position.y
+              u.model.position.z = user.position.z
+            }
+          })
+        }
+      })
+    
+    })
+}
+
 }
 document.body.appendChild(renderer.domElement);
 animate();
@@ -231,20 +350,11 @@ animate();
 
 
 
-
-
-
-
-
 //   tick();
 };
 
-//sockets
 
-socket.on("connect", () => {
-  console.log(`connected via socket`);
-});
+  
 
-console.log("updated");
 
 
