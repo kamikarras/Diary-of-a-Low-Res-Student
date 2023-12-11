@@ -22,6 +22,14 @@ body{
     outline: none;
 }
 
+.fillAbsolute{
+    position:absolute;
+    bottom:0;
+    width:40vw;
+    left:50%;
+    transform: translateX(-50%);
+}
+
 #kami-test{
     position: absolute;
     z-index: 3;

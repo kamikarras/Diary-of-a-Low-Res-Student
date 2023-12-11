@@ -8,7 +8,8 @@ import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-import { RGB_BPTC_UNSIGNED_Format } from "three";
+import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
+
 
 let socketOpen=false;
 const loader = new GLTFLoader();
@@ -65,17 +66,18 @@ callButton.addEventListener("mousedown", () => {
   setTimeout(() => {
     flower.classList.add("scaleUp");
     document.body.innerHTML = "";
-    document.body.appendChild(nameLabel);
-    document.body.appendChild(nameInput);
-    document.body.appendChild(document.createElement('br'));
-    document.body.appendChild(feelingInputStrong);
-    document.body.appendChild(feelingLabelStrong);
-    document.body.appendChild(feelingInputKind);
-    document.body.appendChild(feelingLabelKind);
-    document.body.appendChild(feelingInputCreative);
-    document.body.appendChild(feelingLabelCreative);
-    document.body.appendChild(document.createElement('br'));
-    document.body.appendChild(submitInput);
+    document.body.appendChild(form)
+    form.appendChild(avatarImage)
+    form.appendChild(nameLabel);
+    form.appendChild(nameInput);
+    form.appendChild(feelingQuestion)
+    form.appendChild(feelingInputStrong);
+    form.appendChild(feelingLabelStrong);
+    form.appendChild(feelingInputKind);
+    form.appendChild(feelingLabelKind);
+    form.appendChild(feelingInputCreative);
+    form.appendChild(feelingLabelCreative);
+    form.appendChild(submitInput);
   }, 
   // 11500
   0
@@ -93,48 +95,75 @@ callButton.addEventListener("mouseup", () => {
 
 //-----------------input form-------------------------
 
+const avatarImage = document.createElement('img')
+avatarImage.src = "./assets/blank.svg"
+avatarImage.classList.add('fillAbsolute')
+
+const changeInput = e=>{
+  avatarImage.src = `./assets/${e.target.value}.svg`
+}
+
+const form = document.createElement('div')
+form.style.textAlign = 'center'
 
 
-
-const nameLabel = document.createElement("h1");
+const nameLabel = document.createElement("h2");
 nameLabel.innerText = "What is your name?"
+nameLabel.style.display = "inline"
 
 const nameInput = document.createElement("input");
 nameInput.setAttribute("type", "text");
+nameInput.style.display = "inline"
+
+const feelingQuestion = document.createElement("h2");
+feelingQuestion.innerText = "How are you feeling?"
+feelingQuestion.style.display = "inline"
+feelingQuestion.style.margin = "0px 0px 0px 50px"
 
 const feelingInputStrong = document.createElement("input")
 feelingInputStrong.setAttribute("type", "radio")
 feelingInputStrong.name = "feeling"
 feelingInputStrong.id = 'strong'
 feelingInputStrong.value = 'strong'
+feelingInputStrong.style.margin = "0px 0px 0px 10px"
+feelingInputStrong.addEventListener("change",changeInput)
 
 const feelingLabelStrong = document.createElement('label')
 feelingLabelStrong.for='strong'
 feelingLabelStrong.innerText='strong'
+feelingLabelStrong.style.margin = "0px 0px 0px 5px"
 
 const feelingInputKind = document.createElement("input")
 feelingInputKind.setAttribute("type", "radio")
 feelingInputKind.name = "feeling"
 feelingInputKind.id = 'kind'
 feelingInputKind.value = 'kind'
+feelingInputKind.style.margin = "0px 0px 0px 10px"
+feelingInputKind.addEventListener("change",changeInput)
 
 const feelingLabelKind = document.createElement('label')
 feelingLabelKind.for='kind'
 feelingLabelKind.innerText = 'kind'
+feelingLabelKind.style.margin = "0px 0px 0px 5px"
 
 const feelingInputCreative = document.createElement("input")
 feelingInputCreative.setAttribute("type", "radio")
 feelingInputCreative.name = "feeling"
 feelingInputCreative.id = 'creative'
 feelingInputCreative.value = 'creative'
+feelingInputCreative.style.margin = "0px 0px 0px 10px"
+feelingInputCreative.addEventListener("change",changeInput)
 
 const feelingLabelCreative = document.createElement('label')
 feelingLabelCreative.for='creative'
 feelingLabelCreative.innerText='creative'
+feelingLabelCreative.style.margin = "0px 0px 0px 5px"
 
 
 const submitInput = document.createElement("input");
 submitInput.setAttribute("type", "submit");
+submitInput.value = "ENTER KAMI'S MIND"
+submitInput.style.margin = "0px 0px 0px 50px"
 
 
 submitInput.addEventListener("click", () => {
@@ -165,6 +194,19 @@ submitInput.addEventListener("click", () => {
 
 
 
+
+
+
+//------------------------------------3d-----------------------
+
+
+
+
+
+
+
+
+
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
@@ -187,6 +229,15 @@ const open = () => {
   const canvas = document.createElement("canvas");
   canvas.classList += ".webgl";
   document.body.appendChild(canvas);
+
+//textures
+const textureLoader = new THREE.TextureLoader()
+
+const fumesTexture = textureLoader.load('/static/fumes.png')
+const fumesAlphaTexture = textureLoader.load('/static/fumesAlpha.png')
+const AiTexture = textureLoader.load('/static/anotomy.png')
+AiTexture.colorSpace = THREE.SRGBColorSpace
+
 
   // Scene
   const scene = new THREE.Scene();
@@ -217,18 +268,169 @@ const open = () => {
   //floor
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(100, 100),
-    new THREE.MeshStandardMaterial({ color: "green", side: THREE.DoubleSide })
+    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide })
   );
   floor.rotation.x = -Math.PI * 0.5;
   floor.position.y = 0;
   floor.receiveShadow = true;
   scene.add(floor);
 
+  //welcome mat
+  const welcomeMat = new THREE.Mesh(
+    new THREE.CircleGeometry(5,16),
+    new THREE.MeshStandardMaterial({color:0xFFFFFF})
+  )
+  welcomeMat.rotation.x = -(Math.PI *.5)
+  welcomeMat.position.y = 0.01
+  welcomeMat.receiveShadow = true;
+  scene.add(welcomeMat)
+
+  //welcome fumes
+  const fumesMaterial = new THREE.MeshStandardMaterial({color:'white'})
+fumesMaterial.map = fumesTexture
+fumesMaterial.transparent = true
+fumesMaterial.alphaMap = fumesAlphaTexture
+fumesMaterial.side = THREE.DoubleSide
+
+  const welcomeFumes = new THREE.Mesh(
+    new THREE.PlaneGeometry(2,2),
+    fumesMaterial
+  )
+  welcomeFumes.position.x = -1
+    welcomeFumes.position.y = 1
+    welcomeFumes.position.z = -3
+    welcomeFumes.rotation.y = .2
+    welcomeFumes.castShadow = true
+    welcomeFumes.recieveShadow = true
+
+  scene.add(welcomeFumes)
+
+  //welcome sign
+  const welcomeSign = new THREE.Group()
+  welcomeSign.position.set(-3,1.5,-3.5)
+  welcomeSign.rotation.y = .7
+    const signMaterial = new THREE.MeshStandardMaterial({color:'#AA6B2D'})
+
+
+  const welcomeBoard = new THREE.Mesh(
+    new THREE.BoxGeometry(2.5,1.5,.2),
+    signMaterial 
+  )
+    welcomeBoard.castShadow = true
+    welcomeBoard.receiveShadow = true
+
+    const welcomePaper = new THREE.Mesh(
+      new THREE.BoxGeometry(2,1,.01),
+      new THREE.MeshStandardMaterial({color:'white'})
+    )
+      welcomePaper.castShadow = true
+      welcomePaper.receiveShadow = true
+      welcomePaper.position.z = .1
+
+    const welcomeStake = new THREE.Mesh(
+      new THREE.BoxGeometry(.1,1,.1),
+      signMaterial 
+    )
+    welcomeStake.position.y=-1
+    welcomeStake.castShadow = true
+    welcomeStake.receiveShadow = true
+
+
+  welcomeSign.add(welcomeBoard,welcomeStake,welcomePaper)
+  scene.add(welcomeSign)
+const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white'})
+aiMapMaterial.map=AiTexture
+const aiMap = new THREE.Mesh(
+  new THREE.PlaneGeometry(8,4),
+  aiMapMaterial
+)
+aiMap.position.y = 3
+aiMap.position.z = -10
+
+scene.add(aiMap)
+
+
+
+
+  //----------------scenes---------------
+
+
+
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/v1/decoders/' );
+  dracoLoader.setDecoderConfig({type:'js'})
+  loader.setDRACOLoader( dracoLoader );
+
+//bed scene
+
+  loader.load('models/bed.glb', function (gltf) {
+    const kamiInBed = gltf.scene;
+    kamiInBed.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+    });
+
+    kamiInBed.position.x = 4
+    kamiInBed.position.z = 10
+    kamiInBed.rotation.y = Math.PI *0.75
+
+    scene.add(kamiInBed);
+
+});
+
+
+//wire scene
+
+loader.load('models/wire.glb', function (gltf) {
+  const wire = gltf.scene;
+  wire.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  wire.position.x = -12
+  wire.position.z = -20
+  wire.rotation.y = .1
+
+  scene.add(wire);
+
+});
+
+//dinner scene
+
+loader.load('models/dinner.glb', function (gltf) {
+  const dinner = gltf.scene;
+  dinner.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  dinner.position.x = 12
+  dinner.position.z = -10
+  dinner.rotation.y = Math.PI * .5
+
+  scene.add(dinner);
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   //lights
-  const ambientLight = new THREE.AmbientLight("#ffd599", .9);
-  const sun = new THREE.PointLight("#ffd599", 5);
+  const ambientLight = new THREE.AmbientLight("#ffffff", 2.4);
+  const sun = new THREE.DirectionalLight(0xffffee, 1)
   sun.castShadow = true;
-  sun.position.set(4, 5, -2);
+  sun.position.set(-1, 5, 2);
   scene.add(sun, ambientLight);
 
   renderer.shadowMap.enabled = true;
@@ -242,15 +444,13 @@ const open = () => {
 
 // MODEL WITH ANIMATIONS
 var characterControls
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/v1/decoders/' );
-dracoLoader.setDecoderConfig({type:'js'})
-loader.setDRACOLoader( dracoLoader );
+
 
 loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
     model = gltf.scene;
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
+        if (object.isMesh) object.receiveShadow = true;
     });
 
     userObj.position = model.position
@@ -366,6 +566,7 @@ socket.on('usersAll', data=>{
          user.model = gltf.scene;
           user.model.traverse(function (object) {
               if (object.isMesh) object.castShadow = true;
+              if (object.isMesh) object.receiveShadow = true;
           });
       
           user.position = user.model.position
