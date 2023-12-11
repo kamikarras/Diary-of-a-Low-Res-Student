@@ -30,6 +30,16 @@ body{
     transform: translateX(-50%);
 }
 
+.onlineBoard{
+    position: absolute;
+    right: 50px;
+    top:10px;
+    background-color:rgba(255,100,155,0.5) ;
+    border: 1px solid black;
+    width: 10vw;
+    padding: 10px 30px;
+}
+
 #kami-test{
     position: absolute;
     z-index: 3;

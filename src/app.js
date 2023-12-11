@@ -185,6 +185,8 @@ submitInput.addEventListener("click", () => {
   displayName.classList.add('displayName')
   document.body.appendChild(displayName)
 
+
+
  
   
 
@@ -221,10 +223,28 @@ const open = () => {
 
   socketOpen = true
   
+
+
+//onlineboard
+
+const onlineBoard = document.createElement('div')
+onlineBoard.classList.add('onlineBoard')
+const onlineHeader = document.createElement('h3')
+const onlineList = document.createElement('ul')
+onlineHeader.innerText = "Online"
+onlineBoard.appendChild(onlineHeader)
+onlineBoard.appendChild(onlineList)
+
+document.body.appendChild(onlineBoard)
+
+
+
+
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
   };
+
   // Canvas
   const canvas = document.createElement("canvas");
   canvas.classList += ".webgl";
@@ -430,7 +450,7 @@ loader.load('models/dinner.glb', function (gltf) {
   const ambientLight = new THREE.AmbientLight("#ffffff", 2.4);
   const sun = new THREE.DirectionalLight(0xffffee, 1)
   sun.castShadow = true;
-  sun.position.set(-1, 5, 2);
+  sun.position.set(0, 10, 5);
   scene.add(sun, ambientLight);
 
   renderer.shadowMap.enabled = true;
@@ -559,6 +579,10 @@ animate();
 //   tick();
 socket.on('usersAll', data=>{
   // console.log(users)
+  onlineList.innerHTML = ''
+  const myUserLI = document.createElement('li')
+  myUserLI.innerText = userObj.name + " the " + userObj.feeling
+  onlineList.appendChild(myUserLI)
     data.forEach(user=>{
       if(!ids.includes(user.id)){ 
         ids.push(user.id)
@@ -600,6 +624,10 @@ socket.on('usersAll', data=>{
 
             u.keys=user.keys
           } 
+     
+          const userLI = document.createElement('li')
+          userLI.innerText = user.name + " the " + user.feeling
+          onlineList.appendChild(userLI)
         })
       }
     })
