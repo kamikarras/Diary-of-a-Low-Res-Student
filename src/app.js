@@ -261,7 +261,7 @@ AiTexture.colorSpace = THREE.SRGBColorSpace
 
   // Scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xDDDDFF)
+  scene.background = new THREE.Color('#D5EFF8')
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,

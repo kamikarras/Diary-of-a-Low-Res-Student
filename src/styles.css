@@ -36,7 +36,7 @@ body{
     top:10px;
     background-color:rgba(255,100,155,0.5) ;
     border: 1px solid black;
-    width: 10vw;
+    min-width: 10vw;
     padding: 10px 30px;
 }
 
