@@ -32,6 +32,8 @@ let users = []
 let ids = []
 let myId = ''
 
+let clickableObjects = []
+
 //-------------------intro page--------------------------------
 
 
@@ -279,7 +281,27 @@ AiTexture.colorSpace = THREE.SRGBColorSpace
   camera.position.z = 5;
   scene.add(camera);
 
- 
+//raycaster
+
+const raycaster = new THREE.Raycaster()
+
+//  mouse
+
+ const mouse = new THREE.Vector2()
+window.addEventListener('mousemove',e=>{
+    mouse.x = e.clientX /sizes.width *2 -1
+    mouse.y = -(e.clientY /sizes.height) *2 +1
+
+})
+
+window.addEventListener('click',()=>{
+    if(currentIntersect){
+        if(currentIntersect.object===welcomeFumes){
+            console.log(' clicked object 1')
+        }
+    }
+})
+
 
   // Controls
   const controls = new OrbitControls(camera, canvas);
@@ -323,6 +345,7 @@ fumesMaterial.side = THREE.DoubleSide
     welcomeFumes.castShadow = true
     welcomeFumes.recieveShadow = true
 
+  clickableObjects.push(welcomeFumes)
   scene.add(welcomeFumes)
 
   //welcome sign
@@ -532,13 +555,35 @@ document.addEventListener('keyup', (event) => {
 
 
 
-
+let currentIntersect = null
 
 
 // ANIMATE
 function animate() {
+  let mixerUpdateDelta = clock.getDelta();
+  let eTime= clock.getElapsedTime();
+    
 
-    let mixerUpdateDelta = clock.getDelta();
+    // rayaster 
+    raycaster.setFromCamera(mouse,camera)
+    const intersects = raycaster.intersectObjects(clickableObjects)
+
+    if(intersects.length){
+      if(currentIntersect===null){
+          console.log('mouse enter')
+          canvas.style.cursor = "pointer";
+      }
+      currentIntersect = intersects[0]
+  }
+  else{
+      if(currentIntersect){
+          console.log('mouse leave')
+          canvas.style.cursor = "auto";
+      }
+      currentIntersect = null
+  }
+
+
     if (characterControls) {
         characterControls.update(mixerUpdateDelta, keysPressed);
     }
@@ -552,6 +597,8 @@ function animate() {
         user.guestControls.update(mixerUpdateDelta, user.keys);
       }
     })
+
+    welcomeFumes.position.y = Math.sin(eTime) * 0.1 +1.5
 
     controls.update()
     renderer.render(scene, camera);
