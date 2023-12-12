@@ -293,9 +293,9 @@ document.body.appendChild(onlineBoard)
 //textures
 const textureLoader = new THREE.TextureLoader()
 
-const fumesTexture = textureLoader.load('/fumes.png')
-const fumesAlphaTexture = textureLoader.load('/fumesAlpha.png')
-const AiTexture = textureLoader.load('/anotomy.png')
+const fumesTexture = textureLoader.load('assets/fumes.png')
+const fumesAlphaTexture = textureLoader.load('assets/fumesAlpha.png')
+const AiTexture = textureLoader.load('assets/anotomy.png')
 AiTexture.colorSpace = THREE.SRGBColorSpace
 
 
@@ -337,7 +337,7 @@ window.addEventListener('click',()=>{
         if(currentIntersect.object===welcomeFumes){
             console.log(' clicked fumes')
             let dialogueObj = {}
-            dialogueObj.image = '/fumes.png'
+            dialogueObj.image = 'assets/fumes.png'
             dialogueObj.speaker = "fumes"
             dialogueObj.text= "Hello friend! \n Click anywhere to close this dialogue."
            
