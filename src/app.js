@@ -273,7 +273,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("http://localhost:5173");
+  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -384,7 +384,7 @@ window.addEventListener('click',()=>{
           let dialogueObj = {}
           dialogueObj.image = 'assets/sign.png'
           dialogueObj.speaker = "sign"
-          dialogueObj.text= "Welcome to Kami's memories. This is where she stores her memories as student at NYU in the IMA Low Res Program."
+          dialogueObj.text= "Welcome to Kami's memories. This is where Kami stores her memories as student at NYU in the IMA Low Res Program. \n \n made with: three.js, blender, socket.io, mongodb, and feelings."
          
           toggleModal(dialogueObj)
           
