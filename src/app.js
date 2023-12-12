@@ -195,6 +195,44 @@ submitInput.addEventListener("click", () => {
   open();
 });
 
+let modalOpen = false
+let dialogueModal = document.createElement('div')
+dialogueModal.classList.add('dialogueModal')
+
+let dialogueImage = document.createElement('img')
+let dialogueTextBox = document.createElement('div')
+let dialogueSpeakerHeader = document.createElement('h3')
+let dialogueTextParagraph = document.createElement('p')
+
+dialogueModal.appendChild(dialogueImage)
+dialogueModal.appendChild(dialogueTextBox)
+dialogueTextBox.appendChild(dialogueSpeakerHeader)
+dialogueTextBox.appendChild(dialogueTextParagraph)
+
+const toggleModal = object=>{
+
+  if(modalOpen){
+    document.body.removeChild(dialogueModal)
+    modalOpen=false
+  }else{
+
+    let dialogueImageSource = object.image
+    let dialogueSpeaker = object.speaker
+    let dialogueText = object.text
+    
+    
+    
+    dialogueImage.src = dialogueImageSource
+    dialogueImage.width = '150'
+    dialogueSpeakerHeader.innerText = dialogueSpeaker
+    dialogueTextParagraph.innerText = dialogueText
+    
+
+    document.body.appendChild(dialogueModal)
+    modalOpen = true
+  }
+
+}
 
 
 
@@ -297,8 +335,16 @@ window.addEventListener('mousemove',e=>{
 window.addEventListener('click',()=>{
     if(currentIntersect){
         if(currentIntersect.object===welcomeFumes){
-            console.log(' clicked object 1')
+            console.log(' clicked fumes')
+            let dialogueObj = {}
+            dialogueObj.image = '/static/fumes.png'
+            dialogueObj.speaker = "fumes"
+            dialogueObj.text= "Hello friend! \n Click anywhere to close this dialogue."
+           
+            toggleModal(dialogueObj)
         }
+    }else if(modalOpen){
+      toggleModal()
     }
 })
 
