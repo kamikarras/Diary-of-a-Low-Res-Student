@@ -34,9 +34,9 @@ body{
     position: absolute;
     right: 50px;
     top:10px;
-    background-color:rgba(255,100,255,0.5) ;
+    background-color:rgba(255,100,255,0.7) ;
     border: 1px solid rgb(25, 0, 116);
-    color:rgb(25, 0, 116);  
+    color:rgb(0, 0, 0);  
     min-width: 10vw;
     padding: 10px 30px;
 }

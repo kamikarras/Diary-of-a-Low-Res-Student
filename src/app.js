@@ -315,14 +315,22 @@ document.body.appendChild(onlineBoard)
 const textureLoader = new THREE.TextureLoader()
 
 const fumesTexture = textureLoader.load('assets/fumes.png')
+fumesTexture.colorSpace = THREE.SRGBColorSpace
 const fumesAlphaTexture = textureLoader.load('assets/fumesAlpha.png')
 const AiTexture = textureLoader.load('assets/anotomy.png')
 AiTexture.colorSpace = THREE.SRGBColorSpace
 
 const cantTexture = textureLoader.load('assets/cant.png')
 const cantAlphaTexture = textureLoader.load('assets/cantAlpha.png')
+cantTexture.colorSpace = THREE.SRGBColorSpace
+
 const amberTexture = textureLoader.load('assets/amber.png')
+amberTexture.colorSpace = THREE.SRGBColorSpace
 const amberAlphaTexture = textureLoader.load('assets/amberAlpha.png')
+
+const wiresTexture = textureLoader.load('assets/wires.png')
+wiresTexture.colorSpace = THREE.SRGBColorSpace
+const wiresAlphaTexture = textureLoader.load('assets/wiresAlpha.png')
 
 
   // Scene
@@ -459,7 +467,7 @@ cantMesh.recieveShadow = true
 
 
 
-    //I can't do this
+    //amber
     const amberMaterial = new THREE.MeshStandardMaterial({color:'white'})
     amberMaterial.map = amberTexture
     amberMaterial.transparent = true
@@ -480,6 +488,29 @@ cantMesh.recieveShadow = true
     
     
       scene.add(amberMesh)
+
+
+          //wires photos
+    const wiresMaterial = new THREE.MeshStandardMaterial({color:'white'})
+    wiresMaterial.map = wiresTexture
+    wiresMaterial.transparent = true
+    wiresMaterial.alphaMap = wiresAlphaTexture
+    wiresMaterial.side = THREE.DoubleSide
+    
+      const wiresMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(6,3),
+        wiresMaterial
+      )
+    wiresMesh.position.x = -12
+    wiresMesh.position.z = -23
+    wiresMesh.position.y = 3
+    wiresMesh.rotation.y = Math.PI *2
+    
+    wiresMesh.castShadow = true
+    wiresMesh.recieveShadow = true
+    
+    
+      scene.add(wiresMesh)
 
 
 
