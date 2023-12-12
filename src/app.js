@@ -34,6 +34,8 @@ let myId = ''
 
 let clickableObjects = []
 
+const flowerPositions = []
+
 //-------------------intro page--------------------------------
 
 
@@ -174,6 +176,20 @@ submitInput.addEventListener("click", () => {
     if(radio.checked==true){
       console.log(radio)
       userObj.feeling = radio.value
+      if(userObj.feeling=='creative'){
+        userObj.r = 0
+        userObj.g = 1
+        userObj.b = 0
+      }else if(userObj.feeling=='kind'){
+        userObj.r = 0
+        userObj.g = 1
+        userObj.b = 1
+      }
+      else if(userObj.feeling=='strong'){
+        userObj.r = 1
+        userObj.g = 0
+        userObj.b = 1
+      }
     }
   })
   let myName = nameInput.value;
@@ -246,13 +262,10 @@ const toggleModal = object=>{
 
 
 
-
-
-
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
+  socket = io.connect("http://localhost:5173");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -342,6 +355,8 @@ window.addEventListener('click',()=>{
             dialogueObj.text= "Hello friend! \n Click anywhere to close this dialogue."
            
             toggleModal(dialogueObj)
+            
+
         }
     }else if(modalOpen){
       toggleModal()
@@ -503,7 +518,41 @@ loader.load('models/dinner.glb', function (gltf) {
 });
 
 
+//flower particle system
 
+const particleColorTexture = textureLoader.load('assets/flower.png')
+
+let geometry = null
+let material = null
+let points = null
+
+const generateFlowers = (flowers)=>{
+  if(points!==null){
+    geometry.dispose()
+    material.dispose()
+    scene.remove(points)
+}
+
+  const positions = new Float32Array(flowers.positions)
+  const colors = new Float32Array(flowers.colors)
+
+  geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3))
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+  material = new THREE.PointsMaterial({
+    size: 0.5,
+    sizeAttenuation: true,
+    depthWrite: false,
+    vertexColors: true
+})
+material.transparent = true
+material.alphaMap =particleColorTexture
+points = new THREE.Points(geometry,material)
+console.log(points)
+scene.add(points)
+
+}
 
 
 
@@ -577,6 +626,10 @@ document.addEventListener('keydown', (event) => {
           userObj.keys.s = true
         }else if(event.key.toLowerCase()=='d'){
           userObj.keys.d = true
+        }
+        else if(event.key.toLowerCase()=='f'){
+          socket.emit('plantFlower',userObj)
+
         }
         
     }
@@ -655,13 +708,16 @@ if(socket && model){
   userObj.position=model.position
 console.log('model pos: '+ model.position)
   socket.emit('data',userObj)
+  
   userObj.shift= false
 
   
 }
 
 }
+
 document.body.appendChild(renderer.domElement);
+
 animate();
 
 
@@ -726,6 +782,17 @@ socket.on('usersAll', data=>{
     })
   
   })
+
+  socket.emit('getFlowers',userObj)
+
+  socket.on('allFlowers',data=>{
+
+
+      generateFlowers(data)
+
+  })
+
+
   socket.on('remove',id=>{
     for(let i=0;i<users.length; i++){
       if(users[i].id==id){
