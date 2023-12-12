@@ -252,7 +252,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("http://localhost:5173");
+  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -293,9 +293,9 @@ document.body.appendChild(onlineBoard)
 //textures
 const textureLoader = new THREE.TextureLoader()
 
-const fumesTexture = textureLoader.load('/static/fumes.png')
-const fumesAlphaTexture = textureLoader.load('/static/fumesAlpha.png')
-const AiTexture = textureLoader.load('/static/anotomy.png')
+const fumesTexture = textureLoader.load('/fumes.png')
+const fumesAlphaTexture = textureLoader.load('/fumesAlpha.png')
+const AiTexture = textureLoader.load('/anotomy.png')
 AiTexture.colorSpace = THREE.SRGBColorSpace
 
 
@@ -337,7 +337,7 @@ window.addEventListener('click',()=>{
         if(currentIntersect.object===welcomeFumes){
             console.log(' clicked fumes')
             let dialogueObj = {}
-            dialogueObj.image = '/static/fumes.png'
+            dialogueObj.image = '/fumes.png'
             dialogueObj.speaker = "fumes"
             dialogueObj.text= "Hello friend! \n Click anywhere to close this dialogue."
            
@@ -729,6 +729,13 @@ socket.on('usersAll', data=>{
   socket.on('remove',id=>{
     for(let i=0;i<users.length; i++){
       if(users[i].id==id){
+        users[i].model.traverse(function (object) {
+          if(object.isMesh){
+          object.geomery.displose()
+          object.material.displose()
+          }
+
+      });
         scene.remove(users[i].model)
         users.splice(i,1)
       }
