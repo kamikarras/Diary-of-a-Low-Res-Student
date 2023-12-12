@@ -8,7 +8,8 @@ import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-import { RGB_BPTC_UNSIGNED_Format } from "three";
+import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
+
 
 let socketOpen=false;
 const loader = new GLTFLoader();
@@ -30,6 +31,8 @@ let models = []
 let users = []
 let ids = []
 let myId = ''
+
+let clickableObjects = []
 
 //-------------------intro page--------------------------------
 
@@ -65,17 +68,18 @@ callButton.addEventListener("mousedown", () => {
   setTimeout(() => {
     flower.classList.add("scaleUp");
     document.body.innerHTML = "";
-    document.body.appendChild(nameLabel);
-    document.body.appendChild(nameInput);
-    document.body.appendChild(document.createElement('br'));
-    document.body.appendChild(feelingInputStrong);
-    document.body.appendChild(feelingLabelStrong);
-    document.body.appendChild(feelingInputKind);
-    document.body.appendChild(feelingLabelKind);
-    document.body.appendChild(feelingInputCreative);
-    document.body.appendChild(feelingLabelCreative);
-    document.body.appendChild(document.createElement('br'));
-    document.body.appendChild(submitInput);
+    document.body.appendChild(form)
+    form.appendChild(avatarImage)
+    form.appendChild(nameLabel);
+    form.appendChild(nameInput);
+    form.appendChild(feelingQuestion)
+    form.appendChild(feelingInputStrong);
+    form.appendChild(feelingLabelStrong);
+    form.appendChild(feelingInputKind);
+    form.appendChild(feelingLabelKind);
+    form.appendChild(feelingInputCreative);
+    form.appendChild(feelingLabelCreative);
+    form.appendChild(submitInput);
   }, 
   // 11500
   0
@@ -93,48 +97,75 @@ callButton.addEventListener("mouseup", () => {
 
 //-----------------input form-------------------------
 
+const avatarImage = document.createElement('img')
+avatarImage.src = "./assets/blank.svg"
+avatarImage.classList.add('fillAbsolute')
+
+const changeInput = e=>{
+  avatarImage.src = `./assets/${e.target.value}.svg`
+}
+
+const form = document.createElement('div')
+form.style.textAlign = 'center'
 
 
-
-const nameLabel = document.createElement("h1");
+const nameLabel = document.createElement("h2");
 nameLabel.innerText = "What is your name?"
+nameLabel.style.display = "inline"
 
 const nameInput = document.createElement("input");
 nameInput.setAttribute("type", "text");
+nameInput.style.display = "inline"
+
+const feelingQuestion = document.createElement("h2");
+feelingQuestion.innerText = "How are you feeling?"
+feelingQuestion.style.display = "inline"
+feelingQuestion.style.margin = "0px 0px 0px 50px"
 
 const feelingInputStrong = document.createElement("input")
 feelingInputStrong.setAttribute("type", "radio")
 feelingInputStrong.name = "feeling"
 feelingInputStrong.id = 'strong'
 feelingInputStrong.value = 'strong'
+feelingInputStrong.style.margin = "0px 0px 0px 10px"
+feelingInputStrong.addEventListener("change",changeInput)
 
 const feelingLabelStrong = document.createElement('label')
 feelingLabelStrong.for='strong'
 feelingLabelStrong.innerText='strong'
+feelingLabelStrong.style.margin = "0px 0px 0px 5px"
 
 const feelingInputKind = document.createElement("input")
 feelingInputKind.setAttribute("type", "radio")
 feelingInputKind.name = "feeling"
 feelingInputKind.id = 'kind'
 feelingInputKind.value = 'kind'
+feelingInputKind.style.margin = "0px 0px 0px 10px"
+feelingInputKind.addEventListener("change",changeInput)
 
 const feelingLabelKind = document.createElement('label')
 feelingLabelKind.for='kind'
 feelingLabelKind.innerText = 'kind'
+feelingLabelKind.style.margin = "0px 0px 0px 5px"
 
 const feelingInputCreative = document.createElement("input")
 feelingInputCreative.setAttribute("type", "radio")
 feelingInputCreative.name = "feeling"
 feelingInputCreative.id = 'creative'
 feelingInputCreative.value = 'creative'
+feelingInputCreative.style.margin = "0px 0px 0px 10px"
+feelingInputCreative.addEventListener("change",changeInput)
 
 const feelingLabelCreative = document.createElement('label')
 feelingLabelCreative.for='creative'
 feelingLabelCreative.innerText='creative'
+feelingLabelCreative.style.margin = "0px 0px 0px 5px"
 
 
 const submitInput = document.createElement("input");
 submitInput.setAttribute("type", "submit");
+submitInput.value = "ENTER KAMI'S MIND"
+submitInput.style.margin = "0px 0px 0px 50px"
 
 
 submitInput.addEventListener("click", () => {
@@ -156,17 +187,71 @@ submitInput.addEventListener("click", () => {
   displayName.classList.add('displayName')
   document.body.appendChild(displayName)
 
+
+
  
   
 
   open();
 });
 
+let modalOpen = false
+let dialogueModal = document.createElement('div')
+dialogueModal.classList.add('dialogueModal')
+
+let dialogueImage = document.createElement('img')
+let dialogueTextBox = document.createElement('div')
+let dialogueSpeakerHeader = document.createElement('h3')
+let dialogueTextParagraph = document.createElement('p')
+
+dialogueModal.appendChild(dialogueImage)
+dialogueModal.appendChild(dialogueTextBox)
+dialogueTextBox.appendChild(dialogueSpeakerHeader)
+dialogueTextBox.appendChild(dialogueTextParagraph)
+
+const toggleModal = object=>{
+
+  if(modalOpen){
+    document.body.removeChild(dialogueModal)
+    modalOpen=false
+  }else{
+
+    let dialogueImageSource = object.image
+    let dialogueSpeaker = object.speaker
+    let dialogueText = object.text
+    
+    
+    
+    dialogueImage.src = dialogueImageSource
+    dialogueImage.width = '150'
+    dialogueSpeakerHeader.innerText = dialogueSpeaker
+    dialogueTextParagraph.innerText = dialogueText
+    
+
+    document.body.appendChild(dialogueModal)
+    modalOpen = true
+  }
+
+}
+
+
+
+
+
+
+//------------------------------------3d-----------------------
+
+
+
+
+
+
 
 
 
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
+// "http://localhost:5173"
   socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
 
   socket.on("connect", () => {
@@ -178,18 +263,45 @@ const open = () => {
 
   socketOpen = true
   
+
+
+//onlineboard
+
+const onlineBoard = document.createElement('div')
+onlineBoard.classList.add('onlineBoard')
+const onlineHeader = document.createElement('h3')
+const onlineList = document.createElement('ul')
+onlineHeader.innerText = "Online"
+onlineBoard.appendChild(onlineHeader)
+onlineBoard.appendChild(onlineList)
+
+document.body.appendChild(onlineBoard)
+
+
+
+
   const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
   };
+
   // Canvas
   const canvas = document.createElement("canvas");
   canvas.classList += ".webgl";
   document.body.appendChild(canvas);
 
+//textures
+const textureLoader = new THREE.TextureLoader()
+
+const fumesTexture = textureLoader.load('assets/fumes.png')
+const fumesAlphaTexture = textureLoader.load('assets/fumesAlpha.png')
+const AiTexture = textureLoader.load('assets/anotomy.png')
+AiTexture.colorSpace = THREE.SRGBColorSpace
+
+
   // Scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xDDDDFF)
+  scene.background = new THREE.Color('#D5EFF8')
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -207,7 +319,35 @@ const open = () => {
   camera.position.z = 5;
   scene.add(camera);
 
- 
+//raycaster
+
+const raycaster = new THREE.Raycaster()
+
+//  mouse
+
+ const mouse = new THREE.Vector2()
+window.addEventListener('mousemove',e=>{
+    mouse.x = e.clientX /sizes.width *2 -1
+    mouse.y = -(e.clientY /sizes.height) *2 +1
+
+})
+
+window.addEventListener('click',()=>{
+    if(currentIntersect){
+        if(currentIntersect.object===welcomeFumes){
+            console.log(' clicked fumes')
+            let dialogueObj = {}
+            dialogueObj.image = 'assets/fumes.png'
+            dialogueObj.speaker = "fumes"
+            dialogueObj.text= "Hello friend! \n Click anywhere to close this dialogue."
+           
+            toggleModal(dialogueObj)
+        }
+    }else if(modalOpen){
+      toggleModal()
+    }
+})
+
 
   // Controls
   const controls = new OrbitControls(camera, canvas);
@@ -216,18 +356,170 @@ const open = () => {
   //floor
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(100, 100),
-    new THREE.MeshStandardMaterial({ color: "green", side: THREE.DoubleSide })
+    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide })
   );
   floor.rotation.x = -Math.PI * 0.5;
   floor.position.y = 0;
   floor.receiveShadow = true;
   scene.add(floor);
 
+  //welcome mat
+  const welcomeMat = new THREE.Mesh(
+    new THREE.CircleGeometry(5,16),
+    new THREE.MeshStandardMaterial({color:0xFFFFFF})
+  )
+  welcomeMat.rotation.x = -(Math.PI *.5)
+  welcomeMat.position.y = 0.01
+  welcomeMat.receiveShadow = true;
+  scene.add(welcomeMat)
+
+  //welcome fumes
+  const fumesMaterial = new THREE.MeshStandardMaterial({color:'white'})
+fumesMaterial.map = fumesTexture
+fumesMaterial.transparent = true
+fumesMaterial.alphaMap = fumesAlphaTexture
+fumesMaterial.side = THREE.DoubleSide
+
+  const welcomeFumes = new THREE.Mesh(
+    new THREE.PlaneGeometry(2,2),
+    fumesMaterial
+  )
+  welcomeFumes.position.x = -1
+    welcomeFumes.position.y = 1
+    welcomeFumes.position.z = -3
+    welcomeFumes.rotation.y = .2
+    welcomeFumes.castShadow = true
+    welcomeFumes.recieveShadow = true
+
+  clickableObjects.push(welcomeFumes)
+  scene.add(welcomeFumes)
+
+  //welcome sign
+  const welcomeSign = new THREE.Group()
+  welcomeSign.position.set(-3,1.5,-3.5)
+  welcomeSign.rotation.y = .7
+    const signMaterial = new THREE.MeshStandardMaterial({color:'#AA6B2D'})
+
+
+  const welcomeBoard = new THREE.Mesh(
+    new THREE.BoxGeometry(2.5,1.5,.2),
+    signMaterial 
+  )
+    welcomeBoard.castShadow = true
+    welcomeBoard.receiveShadow = true
+
+    const welcomePaper = new THREE.Mesh(
+      new THREE.BoxGeometry(2,1,.01),
+      new THREE.MeshStandardMaterial({color:'white'})
+    )
+      welcomePaper.castShadow = true
+      welcomePaper.receiveShadow = true
+      welcomePaper.position.z = .1
+
+    const welcomeStake = new THREE.Mesh(
+      new THREE.BoxGeometry(.1,1,.1),
+      signMaterial 
+    )
+    welcomeStake.position.y=-1
+    welcomeStake.castShadow = true
+    welcomeStake.receiveShadow = true
+
+
+  welcomeSign.add(welcomeBoard,welcomeStake,welcomePaper)
+  scene.add(welcomeSign)
+const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white'})
+aiMapMaterial.map=AiTexture
+const aiMap = new THREE.Mesh(
+  new THREE.PlaneGeometry(8,4),
+  aiMapMaterial
+)
+aiMap.position.y = 3
+aiMap.position.z = -10
+
+scene.add(aiMap)
+
+
+
+
+  //----------------scenes---------------
+
+
+
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath( 'https://www.gstatic.com/draco/v1/decoders/' );
+  dracoLoader.setDecoderConfig({type:'js'})
+  loader.setDRACOLoader( dracoLoader );
+
+//bed scene
+
+  loader.load('models/bed.glb', function (gltf) {
+    const kamiInBed = gltf.scene;
+    kamiInBed.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+    });
+
+    kamiInBed.position.x = 4
+    kamiInBed.position.z = 10
+    kamiInBed.rotation.y = Math.PI *0.75
+
+    scene.add(kamiInBed);
+
+});
+
+
+//wire scene
+
+loader.load('models/wire.glb', function (gltf) {
+  const wire = gltf.scene;
+  wire.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  wire.position.x = -12
+  wire.position.z = -20
+  wire.rotation.y = .1
+
+  scene.add(wire);
+
+});
+
+//dinner scene
+
+loader.load('models/dinner.glb', function (gltf) {
+  const dinner = gltf.scene;
+  dinner.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  dinner.position.x = 12
+  dinner.position.z = -10
+  dinner.rotation.y = Math.PI * .5
+
+  scene.add(dinner);
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   //lights
-  const ambientLight = new THREE.AmbientLight("#ffd599", .9);
-  const sun = new THREE.PointLight("#ffd599", 5);
+  const ambientLight = new THREE.AmbientLight("#ffffff", 2.4);
+  const sun = new THREE.DirectionalLight(0xffffee, 1)
   sun.castShadow = true;
-  sun.position.set(4, 5, -2);
+  sun.position.set(0, 10, 5);
   scene.add(sun, ambientLight);
 
   renderer.shadowMap.enabled = true;
@@ -241,14 +533,13 @@ const open = () => {
 
 // MODEL WITH ANIMATIONS
 var characterControls
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
-loader.setDRACOLoader( dracoLoader );
 
-loader.load('models/kami.glb', function (gltf) {
+
+loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
     model = gltf.scene;
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
+        if (object.isMesh) object.receiveShadow = true;
     });
 
     userObj.position = model.position
@@ -299,7 +590,7 @@ document.addEventListener('keyup', (event) => {
     if(event.key.toLowerCase()=='w'){
       userObj.keys.w = false
     }else if(event.key.toLowerCase()=='a'){
-      userObj.keys.a = false.keys
+      userObj.keys.a = false
     }else if(event.key.toLowerCase()=='s'){
       userObj.keys.s = false
     }else if(event.key.toLowerCase()=='d'){
@@ -310,13 +601,35 @@ document.addEventListener('keyup', (event) => {
 
 
 
-
+let currentIntersect = null
 
 
 // ANIMATE
 function animate() {
+  let mixerUpdateDelta = clock.getDelta();
+  let eTime= clock.getElapsedTime();
+    
 
-    let mixerUpdateDelta = clock.getDelta();
+    // rayaster 
+    raycaster.setFromCamera(mouse,camera)
+    const intersects = raycaster.intersectObjects(clickableObjects)
+
+    if(intersects.length){
+      if(currentIntersect===null){
+          console.log('mouse enter')
+          canvas.style.cursor = "pointer";
+      }
+      currentIntersect = intersects[0]
+  }
+  else{
+      if(currentIntersect){
+          console.log('mouse leave')
+          canvas.style.cursor = "auto";
+      }
+      currentIntersect = null
+  }
+
+
     if (characterControls) {
         characterControls.update(mixerUpdateDelta, keysPressed);
     }
@@ -331,6 +644,8 @@ function animate() {
       }
     })
 
+    welcomeFumes.position.y = Math.sin(eTime) * 0.1 +1.5
+
     controls.update()
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -342,53 +657,7 @@ console.log('model pos: '+ model.position)
   socket.emit('data',userObj)
   userObj.shift= false
 
-  socket.on('usersAll', data=>{
-    // console.log(users)
-      data.forEach(user=>{
-        if(!ids.includes(user.id)){
-          ids.push(user.id)
-          loader.load('models/kami.glb', function (gltf) {
-           user.model = gltf.scene;
-            user.model.traverse(function (object) {
-                if (object.isMesh) object.castShadow = true;
-            });
-        
-            user.position = user.model.position
-            
-            scene.add(user.model);
-
-
-            user.gltfAnimations = gltf.animations;
-            user.mixer = new THREE.AnimationMixer(user.model);
-            user.animationsMap = new Map()
-            user.gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
-            user.animationsMap.set(a.name, user.mixer.clipAction(a))
-            })
-            user.guestControls = new GuestControls(user.model, user.mixer, user.animationsMap, 'idle')
-
-
-    
-        });
-    
-          users.push(user)
-        }
-        if(user.id!=myId){
-          users.forEach(u=>{
-            if(user.id==u.id){
-              console.log(u.model)
-              u.position = user.position
-              u.model.position.x = user.position.x
-              u.model.position.y = user.position.y
-              u.model.position.z = user.position.z
-              u.shift = user.shift
-
-              u.keys=user.keys
-            } 
-          })
-        }
-      })
-    
-    })
+  
 }
 
 }
@@ -401,7 +670,73 @@ animate();
 
 
 //   tick();
+socket.on('usersAll', data=>{
+  // console.log(users)
+  onlineList.innerHTML = ''
+  const myUserLI = document.createElement('li')
+  myUserLI.innerText = userObj.name + " the " + userObj.feeling
+  onlineList.appendChild(myUserLI)
+    data.forEach(user=>{
+      if(!ids.includes(user.id)){ 
+        ids.push(user.id)
+        loader.load(`models/${user.feeling}.glb`, function (gltf) {
+         user.model = gltf.scene;
+          user.model.traverse(function (object) {
+              if (object.isMesh) object.castShadow = true;
+              if (object.isMesh) object.receiveShadow = true;
+          });
+      
+          user.position = user.model.position
+          
+          scene.add(user.model);
+
+
+          user.gltfAnimations = gltf.animations;
+          user.mixer = new THREE.AnimationMixer(user.model);
+          user.animationsMap = new Map()
+          user.gltfAnimations.filter(a => a.name != 'TPose').forEach((a) => {
+          user.animationsMap.set(a.name, user.mixer.clipAction(a))
+          })
+          user.guestControls = new GuestControls(user.model, user.mixer, user.animationsMap, 'idle')
+
+
+  
+      });
+  
+        users.push(user)
+      }
+      if(user.id!=myId){
+        users.forEach(u=>{
+          if(user.id==u.id && u.model){
+            console.log(u.model)
+            u.position = user.position
+            u.model.position.x = user.position.x
+            u.model.position.y = user.position.y
+            u.model.position.z = user.position.z
+            u.shift = user.shift
+
+            u.keys=user.keys
+          } 
+     
+          const userLI = document.createElement('li')
+          userLI.innerText = user.name + " the " + user.feeling
+          onlineList.appendChild(userLI)
+        })
+      }
+    })
+  
+  })
+  socket.on('remove',id=>{
+    for(let i=0;i<users.length; i++){
+      if(users[i].id==id){
+
+        scene.remove(users[i].model)
+        users.splice(i,1)
+      }
+    }
+  })
 };
+
 
 
   

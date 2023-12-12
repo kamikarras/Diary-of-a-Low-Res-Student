@@ -19,8 +19,8 @@ export class GuestControls {
     
     // constants
     fadeDuration: number = 0.2
-    runVelocity = 5
-    walkVelocity = 2
+    runVelocity = 7
+    walkVelocity = 4
 
     constructor(model: THREE.Group,
         mixer: THREE.AnimationMixer, animationsMap: Map<string, THREE.AnimationAction>,
@@ -95,17 +95,17 @@ export class GuestControls {
 
         if (keysPressed[W]) {
             if (keysPressed[A]) {
-                directionOffset = Math.PI / 4 +  Math.PI*2 // w+a
+                directionOffset = Math.PI / 4 +  Math.PI/2 // w+a
             } else if (keysPressed[D]) {
-                directionOffset = - Math.PI / 4 + Math.PI*2 // w+d
+                directionOffset = - Math.PI / 4 + Math.PI/2 // w+d
             }else{
                 directionOffset = Math.PI
             }
         } else if (keysPressed[S]) {
             if (keysPressed[A]) {
-                directionOffset = Math.PI / 4 + Math.PI / 2 // s+a
+                directionOffset = Math.PI / 4 + Math.PI * 2 // s+a
             } else if (keysPressed[D]) {
-                directionOffset = -Math.PI / 4 - Math.PI / 2 // s+d
+                directionOffset = -Math.PI / 4 - Math.PI * 2 // s+d
             } else {
                 directionOffset = Math.PI*2 // s
             }
