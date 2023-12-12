@@ -252,7 +252,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com");
+  socket = io.connect("http://localhost:5173");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -729,13 +729,7 @@ socket.on('usersAll', data=>{
   socket.on('remove',id=>{
     for(let i=0;i<users.length; i++){
       if(users[i].id==id){
-        users[i].model.traverse(function (object) {
-          if(object.isMesh){
-          object.geomery.displose()
-          object.material.displose()
-          }
 
-      });
         scene.remove(users[i].model)
         users.splice(i,1)
       }
