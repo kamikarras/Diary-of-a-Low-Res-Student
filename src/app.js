@@ -1,17 +1,14 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { CharacterControls } from './characterControls';
 import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
 import * as THREE from "three";
 import io from "socket.io-client";
-import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
 
 
-let socketOpen=false;
+
 const loader = new GLTFLoader();
 let userObj = {
   keys:{
@@ -27,14 +24,14 @@ let socket = null
 
 let model = null
 
-let models = []
+
 let users = []
 let ids = []
 let myId = ''
 
 let clickableObjects = []
 
-const flowerPositions = []
+
 
 //-------------------intro page--------------------------------
 
@@ -60,15 +57,19 @@ window.addEventListener("resize", () => {
 
 //call button
 const callButton = document.getElementById("intro-button");
+const hello = document.getElementById("intro-hello");
 
 
 callButton.addEventListener("mousedown", () => {
   callButton.src = "./assets/call-button-pressed.svg";
   kamiTest.style.display = "block";
+  flower.classList.add("fadeOut");
+  hello.classList.add("fadeOut");
+  callButton.classList.add("fadeOut");
   kamiTest.play();
   kamiTest.style.objectFit = "fill";
   setTimeout(() => {
-    flower.classList.add("scaleUp");
+    
     document.body.innerHTML = "";
     document.body.appendChild(form)
     form.appendChild(avatarImage)
@@ -83,7 +84,7 @@ callButton.addEventListener("mousedown", () => {
     form.appendChild(feelingLabelCreative);
     form.appendChild(submitInput);
   }, 
-  // 11500
+  // 11700
   0
   );
 });
@@ -202,7 +203,11 @@ submitInput.addEventListener("click", () => {
   displayName.innerText = userObj.name + " the " + userObj.feeling
   displayName.classList.add('displayName')
   document.body.appendChild(displayName)
-
+  
+  const pressF = document.createElement('h1')
+  pressF.innerText = 'press "f"  to plant a flower'
+  pressF.classList.add('pressF')
+  document.body.appendChild(pressF)
 
 
  
@@ -274,7 +279,7 @@ const open = () => {
     ids.push(myId)
   });
 
-  socketOpen = true
+
   
 
 
@@ -310,6 +315,9 @@ const fumesTexture = textureLoader.load('assets/fumes.png')
 const fumesAlphaTexture = textureLoader.load('assets/fumesAlpha.png')
 const AiTexture = textureLoader.load('assets/anotomy.png')
 AiTexture.colorSpace = THREE.SRGBColorSpace
+
+const cantTexture = textureLoader.load('assets/cant.png')
+const cantAlphaTexture = textureLoader.load('assets/cantAlpha.png')
 
 
   // Scene
@@ -409,6 +417,31 @@ fumesMaterial.side = THREE.DoubleSide
   clickableObjects.push(welcomeFumes)
   scene.add(welcomeFumes)
 
+
+
+  //I can't do this
+  const cantMaterial = new THREE.MeshStandardMaterial({color:'white'})
+cantMaterial.map = cantTexture
+cantMaterial.transparent = true
+cantMaterial.alphaMap = cantAlphaTexture
+cantMaterial.side = THREE.DoubleSide
+
+  const cantMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(4,2),
+    cantMaterial
+  )
+cantMesh.position.x = 1
+cantMesh.position.z = 14
+cantMesh.position.y = 2
+cantMesh.rotation.y = Math.PI *1.25
+
+cantMesh.castShadow = true
+cantMesh.recieveShadow = true
+
+  // clickableObjects.push(cantMesh)
+  scene.add(cantMesh)
+
+
   //welcome sign
   const welcomeSign = new THREE.Group()
   welcomeSign.position.set(-3,1.5,-3.5)
@@ -442,14 +475,16 @@ fumesMaterial.side = THREE.DoubleSide
 
   welcomeSign.add(welcomeBoard,welcomeStake,welcomePaper)
   scene.add(welcomeSign)
-const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white'})
+const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white',side: THREE.DoubleSide})
 aiMapMaterial.map=AiTexture
 const aiMap = new THREE.Mesh(
-  new THREE.PlaneGeometry(8,4),
+  new THREE.PlaneGeometry(32,16),
   aiMapMaterial
 )
-aiMap.position.y = 3
-aiMap.position.z = -10
+aiMap.position.y = 9
+aiMap.position.z = -30
+aiMap.position.x = 30
+aiMap.rotation.y = Math.PI * -0.25
 
 scene.add(aiMap)
 
@@ -541,7 +576,7 @@ const generateFlowers = (flowers)=>{
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
   material = new THREE.PointsMaterial({
-    size: 0.5,
+    size: 0.7,
     sizeAttenuation: true,
     depthWrite: false,
     vertexColors: true
@@ -558,6 +593,20 @@ scene.add(points)
 
 
 
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
 
 
 

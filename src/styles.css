@@ -55,6 +55,13 @@ body{
     grid-template-columns: 1fr 5fr;
 }
 
+.pressF{
+    position: absolute;
+    bottom: 50px;
+    right:100px;
+    width: 600px
+}
+
 #kami-test{
     position: absolute;
     z-index: 3;
@@ -63,7 +70,7 @@ body{
     left: 48.8%;
     opacity: 1;
     display: none;
-    animation: fade-in 2s forwards, scale-up .7s 11.0000000001s forwards;
+    animation: fade-in 2s forwards, scale-down .9s 11.0000000001s forwards;
 }
 
 
@@ -73,6 +80,7 @@ body{
     bottom: 0;
     left:0;
     z-index: 1;
+    transform-origin: center;
 }
 
 #intro-fumes{
@@ -102,10 +110,10 @@ body{
     opacity: 0;
 }
 
-.scaleUp{
-    transform: scale(1);
-    animation: scale-up 1s forwards;
+.fadeOut{
+    animation: fade-in .9s 11.0000000001s reverse;
 }
+
 /* animations */
 
 @keyframes intro-fly {
@@ -165,6 +173,14 @@ body{
     }
 }
 
+@keyframes scale-down{
+    0%{
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(.01)
+    }
+}
 @keyframes scale-up{
     0%{
         transform: scale(1);
