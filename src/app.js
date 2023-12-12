@@ -193,6 +193,9 @@ submitInput.addEventListener("click", () => {
       }
     }
   })
+  if(!userObj.feeling){
+    return
+  }
   let myName = nameInput.value;
   userObj.name = myName
 
@@ -318,6 +321,8 @@ AiTexture.colorSpace = THREE.SRGBColorSpace
 
 const cantTexture = textureLoader.load('assets/cant.png')
 const cantAlphaTexture = textureLoader.load('assets/cantAlpha.png')
+const amberTexture = textureLoader.load('assets/amber.png')
+const amberAlphaTexture = textureLoader.load('assets/amberAlpha.png')
 
 
   // Scene
@@ -355,6 +360,7 @@ window.addEventListener('mousemove',e=>{
 
 window.addEventListener('click',()=>{
     if(currentIntersect){
+      console.log(currentIntersect)
         if(currentIntersect.object===welcomeFumes){
             console.log(' clicked fumes')
             let dialogueObj = {}
@@ -365,7 +371,17 @@ window.addEventListener('click',()=>{
             toggleModal(dialogueObj)
             
 
-        }
+        } if(currentIntersect.object==welcomeBoard){
+          console.log(' clicked Sign')
+          let dialogueObj = {}
+          dialogueObj.image = 'assets/sign.png'
+          dialogueObj.speaker = "sign"
+          dialogueObj.text= "Welcome to Kami's memories. This is where she stores her memories as student at NYU in the IMA Low Res Program."
+         
+          toggleModal(dialogueObj)
+          
+
+      }
     }else if(modalOpen){
       toggleModal()
     }
@@ -407,10 +423,10 @@ fumesMaterial.side = THREE.DoubleSide
     new THREE.PlaneGeometry(2,2),
     fumesMaterial
   )
-  welcomeFumes.position.x = -1
+  welcomeFumes.position.x = 1
     welcomeFumes.position.y = 1
     welcomeFumes.position.z = -3
-    welcomeFumes.rotation.y = .2
+    welcomeFumes.rotation.y = -.2
     welcomeFumes.castShadow = true
     welcomeFumes.recieveShadow = true
 
@@ -438,8 +454,33 @@ cantMesh.rotation.y = Math.PI *1.25
 cantMesh.castShadow = true
 cantMesh.recieveShadow = true
 
-  // clickableObjects.push(cantMesh)
+
   scene.add(cantMesh)
+
+
+
+    //I can't do this
+    const amberMaterial = new THREE.MeshStandardMaterial({color:'white'})
+    amberMaterial.map = amberTexture
+    amberMaterial.transparent = true
+    amberMaterial.alphaMap = amberAlphaTexture
+    amberMaterial.side = THREE.DoubleSide
+    
+      const amberMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.5,3),
+        amberMaterial
+      )
+    amberMesh.position.x = 14
+    amberMesh.position.z = -10
+    amberMesh.position.y = 1.4
+    amberMesh.rotation.y = Math.PI
+    
+    amberMesh.castShadow = true
+    amberMesh.recieveShadow = true
+    
+    
+      scene.add(amberMesh)
+
 
 
   //welcome sign
@@ -455,6 +496,7 @@ cantMesh.recieveShadow = true
   )
     welcomeBoard.castShadow = true
     welcomeBoard.receiveShadow = true
+    clickableObjects.push(welcomeBoard)
 
     const welcomePaper = new THREE.Mesh(
       new THREE.BoxGeometry(2,1,.01),
@@ -474,7 +516,11 @@ cantMesh.recieveShadow = true
 
 
   welcomeSign.add(welcomeBoard,welcomeStake,welcomePaper)
+
   scene.add(welcomeSign)
+
+
+
 const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white',side: THREE.DoubleSide})
 aiMapMaterial.map=AiTexture
 const aiMap = new THREE.Mesh(
