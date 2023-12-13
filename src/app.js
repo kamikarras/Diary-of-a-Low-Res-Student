@@ -384,7 +384,7 @@ window.addEventListener('click',()=>{
           let dialogueObj = {}
           dialogueObj.image = 'assets/sign.png'
           dialogueObj.speaker = "sign"
-          dialogueObj.text= "Welcome to Kami's memories. This is where Kami stores her memories as student at NYU in the IMA Low Res Program. \n \n made with: three.js, blender, socket.io, mongodb, and feelings."
+          dialogueObj.text= "Welcome to Kami's memories. This is where Kami stores her memories as student at NYU in the IMA Low Res Program. \n \n made with: three.js, blender, Illustrator, socket.io, mongodb and feelings."
          
           toggleModal(dialogueObj)
           
