@@ -84,8 +84,8 @@ callButton.addEventListener("mousedown", () => {
     form.appendChild(feelingLabelCreative);
     form.appendChild(submitInput);
   }, 
-  11700
-  // 0
+  // 11700
+  0
   );
 });
 
@@ -333,6 +333,15 @@ wiresTexture.colorSpace = THREE.SRGBColorSpace
 const wiresAlphaTexture = textureLoader.load('assets/wiresAlpha.png')
 
 
+const bagImgs1Texture = textureLoader.load('assets/bagImgs1.png')
+bagImgs1Texture.colorSpace = THREE.SRGBColorSpace
+const bagImgs1AlphaTexture = textureLoader.load('assets/bagImgs1Alpha.png')
+
+const bagImgs2Texture = textureLoader.load('assets/bagImgs2.png')
+bagImgs2Texture.colorSpace = THREE.SRGBColorSpace
+const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
+
+
   // Scene
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#D5EFF8')
@@ -514,6 +523,46 @@ cantMesh.recieveShadow = true
 
 
 
+          //bag photos
+    const bagImgs1Material = new THREE.MeshStandardMaterial({color:'white'})
+    bagImgs1Material.map = bagImgs1Texture
+    bagImgs1Material.transparent = true
+    bagImgs1Material.alphaMap = bagImgs1AlphaTexture
+    
+      const bagImgs1Mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(9,2),
+        bagImgs1Material
+      )
+    bagImgs1Mesh.position.x = -32
+    bagImgs1Mesh.position.z = -30
+    bagImgs1Mesh.position.y = 3
+    bagImgs1Mesh.rotation.y = Math.PI *-0.5
+    
+    bagImgs1Mesh.castShadow = true
+    bagImgs1Mesh.recieveShadow = true
+
+    const bagImgs2Material = new THREE.MeshStandardMaterial({color:'white'})
+    bagImgs2Material.map = bagImgs2Texture
+    bagImgs2Material.transparent = true
+    bagImgs2Material.alphaMap = bagImgs2AlphaTexture
+    
+      const bagImgs2Mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(9,2),
+        bagImgs2Material
+      )
+    bagImgs2Mesh.position.x = -43
+    bagImgs2Mesh.position.z = -30
+    bagImgs2Mesh.position.y = 3
+    bagImgs2Mesh.rotation.y = Math.PI*0.5
+    
+    bagImgs2Mesh.castShadow = true
+    bagImgs2Mesh.recieveShadow = true
+    
+    
+      scene.add(bagImgs1Mesh, bagImgs2Mesh)
+
+
+
   //welcome sign
   const welcomeSign = new THREE.Group()
   welcomeSign.position.set(-3,1.5,-3.5)
@@ -609,6 +658,24 @@ loader.load('models/wire.glb', function (gltf) {
   wire.rotation.y = .1
 
   scene.add(wire);
+
+});
+
+//sewing scene
+
+loader.load('models/sewing.glb', function (gltf) {
+  const sewing = gltf.scene;
+  sewing.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  sewing.position.x = -37.5
+  sewing.position.y = 0.2
+  sewing.position.z = -28
+  sewing.rotation.y = Math.PI 
+
+  scene.add(sewing);
 
 });
 
