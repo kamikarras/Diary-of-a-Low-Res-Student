@@ -6,6 +6,7 @@
 body{
     background-color: #D5EFF8;
     overflow:hidden;
+    font-family: 'Quicksand', sans-serif;
 }
 
 .displayName{
