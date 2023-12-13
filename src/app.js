@@ -273,7 +273,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
+  socket = io.connect("http://localhost:5173");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -626,6 +626,24 @@ loader.load('models/dinner.glb', function (gltf) {
   dinner.rotation.y = Math.PI * .5
 
   scene.add(dinner);
+
+});
+
+//bag scene
+
+loader.load('models/bag.glb', function (gltf) {
+  const bag = gltf.scene;
+  bag.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  bag.scale.set(3,3,3)
+  bag.position.x = -38
+  bag.position.z = -30
+  bag.rotation.y = Math.PI * .5
+
+  scene.add(bag);
 
 });
 
