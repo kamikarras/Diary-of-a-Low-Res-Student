@@ -715,6 +715,25 @@ loader.load('models/bag.glb', function (gltf) {
 });
 
 
+//ponk scene
+
+loader.load('models/ponk.glb', function (gltf) {
+  const ponk = gltf.scene;
+  ponk.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  // ponk.scale.set(3,3,3)
+  ponk.position.x = 28
+  ponk.position.z = -5
+  ponk.rotation.y = Math.PI * -.5
+
+  scene.add(ponk);
+
+});
+
+
 //flower particle system
 
 const particleColorTexture = textureLoader.load('assets/flower.png')
@@ -780,7 +799,14 @@ window.addEventListener('resize', () =>
   const sun = new THREE.DirectionalLight(0xffffee, 1)
   sun.castShadow = true;
   sun.position.set(0, 10, 5);
-  scene.add(sun, ambientLight);
+
+
+  const ponkLight = new THREE.PointLight(0xff00ff, 3)
+  ponkLight.position.x = 28
+  ponkLight.position.y = 2
+  ponkLight.position.z = -5
+
+  scene.add(sun, ambientLight, ponkLight);
 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
