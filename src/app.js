@@ -273,7 +273,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
+  socket = io.connect("https://diary-of-a-low-res-student-23ca922138a4.herokuapp.com/");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
