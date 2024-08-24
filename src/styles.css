@@ -6,13 +6,75 @@
 body{
     background-color: #D5EFF8;
     overflow:hidden;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'pixelify sans', sans-serif;
 }
 
 .displayName{
     position: absolute;
     left: 50%;
+    top: 15px;
     transform: translateX(-50%);
+}
+.displayFeeling{
+    position: absolute;
+    left: 50%;
+    top: 50px;
+    transform: translateX(-50%);
+}
+
+
+#nameInput{
+    background-color: #D5EFF8;
+    border: none;
+    border-bottom: 3px solid black;
+    height: 30px;
+    margin-left: 20px;
+    width: 200px;
+    font-size: 32px;
+    font-family: 'pixelify sans';
+    text-align: center;
+}
+.feelingLabel{
+    border: 3px solid black;
+    padding: 10px 40px;
+    border-radius: 25px;
+}
+.selected{
+    background-color: black;
+}
+.feelingLabel:hover{
+    background-color: white;
+    cursor: pointer;
+}
+.selected:hover{
+    background-color: black;
+}
+#strong{
+    display: none;
+}
+#creative{
+    display: none;
+}
+#kind{
+    display: none;
+}
+#submitInput{
+    position: absolute;
+    bottom: 40px;
+    right: 60px;
+    background-color: white;
+    color: black;
+    font-family: 'pixelify sans', sans-serif;
+    font-size: 20px;
+    padding: 25px;
+    border-radius: 50px;
+}
+#submitInput:hover{
+    background-color:black;
+    border: 3px solid white;
+    color: white;
+    cursor: pointer;
+    
 }
 
 .webgl

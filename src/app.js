@@ -84,7 +84,7 @@ callButton.addEventListener("mousedown", () => {
     form.appendChild(feelingLabelCreative);
     form.appendChild(submitInput);
   }, 
-  11700
+  1170
   // 0
   );
 });
@@ -104,12 +104,27 @@ const avatarImage = document.createElement('img')
 avatarImage.src = "./assets/blank.svg"
 avatarImage.classList.add('fillAbsolute')
 
+
+
 const changeInput = e=>{
   avatarImage.src = `./assets/${e.target.value}.svg`
+}
+const clickInput = e=>{
+  avatarImage.src = `./assets/${e.target.for}.svg`
+  feelingLabelStrong.classList.remove('selected')
+  feelingLabelKind.classList.remove('selected')
+  feelingLabelCreative.classList.remove('selected')
+    
+  feelingLabelStrong.style.color="black"
+  feelingLabelKind.style.color="black"
+  feelingLabelCreative.style.color="black"
+  e.target.classList.add('selected')
+  e.target.style.color="white"
 }
 
 const form = document.createElement('div')
 form.style.textAlign = 'center'
+form.style.marginTop = '50px'
 
 
 const nameLabel = document.createElement("h2");
@@ -119,11 +134,12 @@ nameLabel.style.display = "inline"
 const nameInput = document.createElement("input");
 nameInput.setAttribute("type", "text");
 nameInput.style.display = "inline"
+nameInput.id = "nameInput"
 
 const feelingQuestion = document.createElement("h2");
 feelingQuestion.innerText = "How are you feeling?"
 feelingQuestion.style.display = "inline"
-feelingQuestion.style.margin = "0px 0px 0px 50px"
+feelingQuestion.style.margin = "0px 30px 0px 100px"
 
 const feelingInputStrong = document.createElement("input")
 feelingInputStrong.setAttribute("type", "radio")
@@ -134,9 +150,14 @@ feelingInputStrong.style.margin = "0px 0px 0px 10px"
 feelingInputStrong.addEventListener("change",changeInput)
 
 const feelingLabelStrong = document.createElement('label')
-feelingLabelStrong.for='strong'
+feelingLabelStrong.htmlFor="strong"
+feelingLabelStrong.innerHTML=feelingInputStrong
+feelingLabelStrong.id='strongLabel'
 feelingLabelStrong.innerText='strong'
 feelingLabelStrong.style.margin = "0px 0px 0px 5px"
+feelingLabelStrong.addEventListener('click', clickInput)
+feelingLabelStrong.classList.add('feelingLabel')
+
 
 const feelingInputKind = document.createElement("input")
 feelingInputKind.setAttribute("type", "radio")
@@ -147,9 +168,12 @@ feelingInputKind.style.margin = "0px 0px 0px 10px"
 feelingInputKind.addEventListener("change",changeInput)
 
 const feelingLabelKind = document.createElement('label')
-feelingLabelKind.for='kind'
+feelingLabelKind.htmlFor='kind'
 feelingLabelKind.innerText = 'kind'
 feelingLabelKind.style.margin = "0px 0px 0px 5px"
+feelingLabelKind.classList.add('feelingLabel')
+
+feelingLabelKind.addEventListener('click', clickInput)
 
 const feelingInputCreative = document.createElement("input")
 feelingInputCreative.setAttribute("type", "radio")
@@ -160,15 +184,19 @@ feelingInputCreative.style.margin = "0px 0px 0px 10px"
 feelingInputCreative.addEventListener("change",changeInput)
 
 const feelingLabelCreative = document.createElement('label')
-feelingLabelCreative.for='creative'
+feelingLabelCreative.htmlFor='creative'
 feelingLabelCreative.innerText='creative'
 feelingLabelCreative.style.margin = "0px 0px 0px 5px"
+feelingLabelCreative.classList.add('feelingLabel')
+
+feelingLabelCreative.addEventListener('click', clickInput)
 
 
 const submitInput = document.createElement("input");
 submitInput.setAttribute("type", "submit");
 submitInput.value = "ENTER KAMI'S MIND"
 submitInput.style.margin = "0px 0px 0px 50px"
+submitInput.id = "submitInput"
 
 
 submitInput.addEventListener("click", () => {
@@ -203,14 +231,14 @@ submitInput.addEventListener("click", () => {
   document.body.innerHTML = ''
 
   const displayName = document.createElement('h1')
-  displayName.innerText = userObj.name + " the " + userObj.feeling
+  displayName.innerText = userObj.name 
   displayName.classList.add('displayName')
   document.body.appendChild(displayName)
+  const displayFeeling = document.createElement('p')
+  displayFeeling.innerText = "the " + userObj.feeling
+  displayFeeling.classList.add('displayFeeling')
+  document.body.appendChild(displayFeeling)
   
-  const pressF = document.createElement('h1')
-  pressF.innerText = 'press "f"  to plant a flower'
-  pressF.classList.add('pressF')
-  document.body.appendChild(pressF)
 
 
  
@@ -273,7 +301,7 @@ const toggleModal = object=>{
 const open = () => {
 // https://ima-sockets-bec2149551cd.herokuapp.com/
 // "http://localhost:5173"
-  socket = io.connect("https://diary-of-a-low-res-student-23ca922138a4.herokuapp.com/");
+  socket = io.connect("https://ima-sockets-bec2149551cd.herokuapp.com/");
 
   socket.on("connect", () => {
     console.log(`connected via socket`);
@@ -344,7 +372,7 @@ const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
   // Scene
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#D5EFF8')
+  scene.background = new THREE.Color('#253F78')
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -358,7 +386,7 @@ const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
     0.1,
     100
   );
-  camera.position.y = 2;
+  camera.position.y = 2.5;
   camera.position.z = 5;
   scene.add(camera);
 
@@ -411,7 +439,7 @@ window.addEventListener('click',()=>{
 
   //floor
   const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(100, 100),
+    new THREE.PlaneGeometry(60, 60),
     new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide })
   );
   floor.rotation.x = -Math.PI * 0.5;
@@ -533,8 +561,8 @@ cantMesh.recieveShadow = true
         new THREE.PlaneGeometry(9,2),
         bagImgs1Material
       )
-    bagImgs1Mesh.position.x = -32
-    bagImgs1Mesh.position.z = -30
+    bagImgs1Mesh.position.x = -12
+    bagImgs1Mesh.position.z = 10
     bagImgs1Mesh.position.y = 3
     bagImgs1Mesh.rotation.y = Math.PI *-0.5
     
@@ -550,8 +578,8 @@ cantMesh.recieveShadow = true
         new THREE.PlaneGeometry(9,2),
         bagImgs2Material
       )
-    bagImgs2Mesh.position.x = -43
-    bagImgs2Mesh.position.z = -30
+    bagImgs2Mesh.position.x = -23
+    bagImgs2Mesh.position.z = 10
     bagImgs2Mesh.position.y = 3
     bagImgs2Mesh.rotation.y = Math.PI*0.5
     
@@ -604,10 +632,10 @@ cantMesh.recieveShadow = true
 const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white',side: THREE.DoubleSide})
 aiMapMaterial.map=AiTexture
 const aiMap = new THREE.Mesh(
-  new THREE.PlaneGeometry(32,16),
+  new THREE.PlaneGeometry(16,8),
   aiMapMaterial
 )
-aiMap.position.y = 9
+aiMap.position.y = 5
 aiMap.position.z = -30
 aiMap.position.x = 30
 aiMap.rotation.y = Math.PI * -0.25
@@ -670,9 +698,9 @@ loader.load('models/sewing.glb', function (gltf) {
       object.receiveShadow = true;
   });
 
-  sewing.position.x = -37.5
+  sewing.position.x = -17.5
   sewing.position.y = 0.2
-  sewing.position.z = -28
+  sewing.position.z = 8
   sewing.rotation.y = Math.PI 
 
   scene.add(sewing);
@@ -706,8 +734,8 @@ loader.load('models/bag.glb', function (gltf) {
   });
 
   bag.scale.set(3,3,3)
-  bag.position.x = -38
-  bag.position.z = -30
+  bag.position.x = -18
+  bag.position.z = 10
   bag.rotation.y = Math.PI * .5
 
   scene.add(bag);
