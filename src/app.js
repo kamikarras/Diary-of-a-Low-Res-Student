@@ -1,5 +1,6 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CharacterControls } from './characterControls';
 import { GuestControls } from './guestControls';
@@ -84,8 +85,8 @@ callButton.addEventListener("mousedown", () => {
     form.appendChild(feelingLabelCreative);
     form.appendChild(submitInput);
   }, 
-  11700
-  // 0
+  // 11700
+  0
   );
 });
 
@@ -370,9 +371,20 @@ bagImgs2Texture.colorSpace = THREE.SRGBColorSpace
 const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
 
-  // Scene
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#253F78')
+  // -----------------------Scene------------------
+
+//load background
+const scene = new THREE.Scene();
+
+new RGBELoader()
+  .load('assets/sky.hdr', function(texture){
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = texture
+    scene.environment = texture
+  })
+
+ 
+  
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -380,11 +392,13 @@ const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+  renderer.toneMappingExposure = 0.4
+
   const camera = new THREE.PerspectiveCamera(
     75,
     sizes.width / sizes.height,
     0.1,
-    100
+    200
   );
   camera.position.y = 2.5;
   camera.position.z = 5;
@@ -446,6 +460,14 @@ window.addEventListener('click',()=>{
   floor.position.y = 0;
   floor.receiveShadow = true;
   scene.add(floor);
+  const floor2 = new THREE.Mesh(
+    new THREE.PlaneGeometry(200, 200),
+    new THREE.MeshStandardMaterial({ color: "#260", side: THREE.DoubleSide })
+  );
+  floor2.rotation.x = -Math.PI * 0.5;
+  floor2.position.y = -.001;
+  floor2.receiveShadow = true;
+  scene.add(floor2);
 
   //welcome mat
   const welcomeMat = new THREE.Mesh(
@@ -668,6 +690,25 @@ scene.add(aiMap)
     kamiInBed.rotation.y = Math.PI *0.75
 
     scene.add(kamiInBed);
+
+});
+
+
+
+//building scene
+
+  loader.load('models/buildings.glb', function (gltf) {
+    const buildings = gltf.scene;
+    buildings.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+    });
+
+    buildings.scale.set(0.5,0.15,0.5)
+
+
+
+    scene.add(buildings);
 
 });
 
