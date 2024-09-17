@@ -912,16 +912,19 @@ loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
 
     characterControls = new CharacterControls(model, mixer, animationsMap, controls, camera,  'idle')
 });
-         
+   
+
+let running = false;
 // CONTROL KEYS
 const keysPressed = {  }
 const keyDisplayQueue = new KeyDisplay();
 document.addEventListener('keydown', (event) => {
     keyDisplayQueue.down(event.key)
-    if (event.shiftKey && characterControls) {
+    if (event.shiftKey && characterControls && running==false) {
         characterControls.switchRunToggle()
         userObj.shift = true
         console.log(userObj.shift)
+        running=true
     } else {
         (keysPressed)[event.key.toLowerCase()] = true
         if(event.key.toLowerCase()=='w'){
@@ -941,8 +944,11 @@ document.addEventListener('keydown', (event) => {
     }
 }, false);
 document.addEventListener('keyup', (event) => {
-  if (event.shiftKey && characterControls) {
-
+  if (event.key.toLowerCase()=='shift' && characterControls) {
+    characterControls.switchRunToggle()
+    userObj.shift = true
+    console.log(userObj.shift)
+    running=false
   }
     keyDisplayQueue.up(event.key);
     (keysPressed)[event.key.toLowerCase()] = false
@@ -999,6 +1005,10 @@ function animate() {
           user.shift = false
 
         }
+        // if(user.shift==false){
+        //   user.guestControls.switchRunToggle()
+
+        // }
         user.guestControls.update(mixerUpdateDelta, user.keys);
       }
     })
