@@ -886,10 +886,15 @@ window.addEventListener('resize', () =>
   
 
   //lights
-  const ambientLight = new THREE.AmbientLight("#ffffff", 2.4);
-  const sun = new THREE.DirectionalLight(0xffffee, 1)
+  const ambientLight = new THREE.AmbientLight("#ffffff", 0.4);
+  const sun = new THREE.DirectionalLight(0xffffee, 3)
   sun.castShadow = true;
   sun.position.set(0, 10, 5);
+  let side = 40
+  sun.shadow.camera.left = side
+  sun.shadow.camera.top = side
+  sun.shadow.camera.right = -side
+  sun.shadow.camera.bottom = -side
 
 
   const ponkLight = new THREE.PointLight(0xff00ff, 3)
