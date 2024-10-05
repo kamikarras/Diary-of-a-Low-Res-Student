@@ -1129,7 +1129,7 @@ socket.on('usersAll', data=>{
       if(users[i].id==id){
 
         scene.remove(users[i].model)
-        // scene.remove(users[i].nameText)
+        scene.remove(users[i].nameText)
         users.splice(i,1)
       }
     }
