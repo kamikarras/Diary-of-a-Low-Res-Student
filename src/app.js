@@ -5,6 +5,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CharacterControls } from './characterControls';
 import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
+import { Text } from 'troika-three-text';
 import * as THREE from "three";
 import io from "socket.io-client";
 
@@ -42,18 +43,13 @@ const flower = document.querySelector("#intro-ground");
 let flowerRect = flower.getBoundingClientRect();
 let bodyRect = document.body.getBoundingClientRect();
 
-console.log(flowerRect.top - bodyRect.top);
 
 const kamiTest = document.querySelector("#kami-test");
 kamiTest.style.bottom = flowerRect.height - flowerRect.height * 0.504 + "px";
-console.log(kamiTest.style);
 
 window.addEventListener("resize", () => {
   flowerRect = flower.getBoundingClientRect();
-  console.log("first: " + kamiTest.style.bottom);
-  console.log("flower: " + flowerRect.height);
   kamiTest.style.bottom = flowerRect.height - flowerRect.height * 0.5 + "px";
-  console.log("second: " + kamiTest.style.bottom);
 });
 
 //call button
@@ -204,7 +200,6 @@ submitInput.addEventListener("click", () => {
   const radioButtons = document.querySelectorAll('input[name="feeling"]');
   radioButtons.forEach(radio=>{
     if(radio.checked==true){
-      console.log(radio)
       userObj.feeling = radio.value
       if(userObj.feeling=='creative'){
         userObj.r = 0
@@ -227,6 +222,7 @@ submitInput.addEventListener("click", () => {
   }
   let myName = nameInput.value;
   userObj.name = myName
+ 
 
 
   document.body.innerHTML = ''
@@ -371,6 +367,23 @@ bagImgs2Texture.colorSpace = THREE.SRGBColorSpace
 const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
 
+// ---------------text-------------
+
+
+const nameText = new Text();
+nameText.fontSize = 0.22;
+nameText.outlineColor = 0xffffff;
+nameText.outlineWidth = 0.1
+nameText.color = 0x000000;
+nameText.anchorX = 'center';
+nameText.anchorY = 'middle';
+nameText.text = userObj.name
+
+
+
+
+
+
   // -----------------------Scene------------------
 
 //load background
@@ -384,7 +397,10 @@ new RGBELoader()
   })
 
  
+  scene.add(nameText);
   
+	nameText.position.set(0, 0.67, -1.44);
+	// nameText.rotateX(-Math.PI / 3.3);
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -403,6 +419,7 @@ new RGBELoader()
   camera.position.y = 2.5;
   camera.position.z = 5;
   scene.add(camera);
+ 
 
 //raycaster
 
@@ -419,9 +436,7 @@ window.addEventListener('mousemove',e=>{
 
 window.addEventListener('click',()=>{
     if(currentIntersect){
-      console.log(currentIntersect)
         if(currentIntersect.object===welcomeFumes){
-            console.log(' clicked fumes')
             let dialogueObj = {}
             dialogueObj.image = 'assets/fumes.png'
             dialogueObj.speaker = "fumes"
@@ -431,7 +446,6 @@ window.addEventListener('click',()=>{
             
 
         } if(currentIntersect.object==welcomeBoard){
-          console.log(' clicked Sign')
           let dialogueObj = {}
           dialogueObj.image = 'assets/sign.png'
           dialogueObj.speaker = "sign"
@@ -834,7 +848,6 @@ const generateFlowers = (flowers)=>{
 material.transparent = true
 material.alphaMap =particleColorTexture
 points = new THREE.Points(geometry,material)
-console.log(points)
 scene.add(points)
 
 }
@@ -882,7 +895,6 @@ window.addEventListener('resize', () =>
   renderer.render(scene, camera);
 
   const clock = new THREE.Clock();
-  console.log(clock);
 
 
 
@@ -923,7 +935,6 @@ document.addEventListener('keydown', (event) => {
     if (event.shiftKey && characterControls && running==false) {
         characterControls.switchRunToggle()
         userObj.shift = true
-        console.log(userObj.shift)
         running=true
     } else {
         (keysPressed)[event.key.toLowerCase()] = true
@@ -947,7 +958,6 @@ document.addEventListener('keyup', (event) => {
   if (event.key.toLowerCase()=='shift' && characterControls) {
     characterControls.switchRunToggle()
     userObj.shift = true
-    console.log(userObj.shift)
     running=false
   }
     keyDisplayQueue.up(event.key);
@@ -971,6 +981,7 @@ let currentIntersect = null
 
 // ANIMATE
 function animate() {
+  
   let mixerUpdateDelta = clock.getDelta();
   let eTime= clock.getElapsedTime();
     
@@ -981,14 +992,12 @@ function animate() {
 
     if(intersects.length){
       if(currentIntersect===null){
-          console.log('mouse enter')
           canvas.style.cursor = "pointer";
       }
       currentIntersect = intersects[0]
   }
   else{
       if(currentIntersect){
-          console.log('mouse leave')
           canvas.style.cursor = "auto";
       }
       currentIntersect = null
@@ -1005,10 +1014,6 @@ function animate() {
           user.shift = false
 
         }
-        // if(user.shift==false){
-        //   user.guestControls.switchRunToggle()
-
-        // }
         user.guestControls.update(mixerUpdateDelta, user.keys);
       }
     })
@@ -1021,8 +1026,9 @@ function animate() {
 
 
 if(socket && model){
+  nameText.position.set(model.position.x, 3.5, model.position.z);
+  nameText.lookAt(camera.position)
   userObj.position=model.position
-console.log('model pos: '+ model.position)
   socket.emit('data',userObj)
   
   userObj.shift= false
@@ -1043,7 +1049,6 @@ animate();
 
 //   tick();
 socket.on('usersAll', data=>{
-  // console.log(users)
   onlineList.innerHTML = ''
   const myUserLI = document.createElement('li')
   myUserLI.innerText = userObj.name + " the " + userObj.feeling
@@ -1053,6 +1058,14 @@ socket.on('usersAll', data=>{
         ids.push(user.id)
         loader.load(`models/${user.feeling}.glb`, function (gltf) {
          user.model = gltf.scene;
+         user.nameText = new Text()
+         user.nameText.fontSize = 0.22;
+         user.nameText.outlineColor = 0xffffff;
+         user.nameText.outlineWidth = 0.1
+         user.nameText.color = 0x000000;
+         user.nameText.anchorX = 'center';
+         user.nameText.anchorY = 'middle';
+         user.nameText.text = user.name
           user.model.traverse(function (object) {
               if (object.isMesh) object.castShadow = true;
               if (object.isMesh) object.receiveShadow = true;
@@ -1060,7 +1073,7 @@ socket.on('usersAll', data=>{
       
           user.position = user.model.position
           
-          scene.add(user.model);
+          scene.add(user.model, user.nameText);
 
 
           user.gltfAnimations = gltf.animations;
@@ -1079,8 +1092,7 @@ socket.on('usersAll', data=>{
       }
       if(user.id!=myId){
         users.forEach(u=>{
-          if(user.id==u.id && u.model){
-            console.log(u.model)
+          if(user.id==u.id && u.model && u.nameText){
             u.position = user.position
             u.model.position.x = user.position.x
             u.model.position.y = user.position.y
@@ -1088,6 +1100,9 @@ socket.on('usersAll', data=>{
             u.shift = user.shift
 
             u.keys=user.keys
+
+            u.nameText.position.set(user.position.x, 3.5, user.position.z)
+            u.nameText.lookAt(camera.position)
           } 
      
           const userLI = document.createElement('li')
@@ -1114,6 +1129,7 @@ socket.on('usersAll', data=>{
       if(users[i].id==id){
 
         scene.remove(users[i].model)
+        // scene.remove(users[i].nameText)
         users.splice(i,1)
       }
     }
