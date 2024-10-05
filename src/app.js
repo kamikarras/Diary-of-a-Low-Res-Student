@@ -230,11 +230,11 @@ submitInput.addEventListener("click", () => {
   const displayName = document.createElement('h1')
   displayName.innerText = userObj.name 
   displayName.classList.add('displayName')
-  document.body.appendChild(displayName)
+  // document.body.appendChild(displayName)
   const displayFeeling = document.createElement('p')
   displayFeeling.innerText = "the " + userObj.feeling
   displayFeeling.classList.add('displayFeeling')
-  document.body.appendChild(displayFeeling)
+  // document.body.appendChild(displayFeeling)
   
 
 
@@ -372,12 +372,23 @@ const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
 const nameText = new Text();
 nameText.fontSize = 0.22;
+nameText.font =  '/assets/PixelifySans.ttf';
 nameText.outlineColor = 0xffffff;
 nameText.outlineWidth = 0.1
 nameText.color = 0x000000;
 nameText.anchorX = 'center';
 nameText.anchorY = 'middle';
 nameText.text = userObj.name
+
+const feelingText = new Text();
+feelingText.fontSize = 0.12;
+feelingText.font =  '/assets/PixelifySans.ttf';
+feelingText.outlineColor = 0xffffff;
+feelingText.outlineWidth = 0.1
+feelingText.color = 0x000000;
+feelingText.anchorX = 'center';
+feelingText.anchorY = 'middle';
+feelingText.text = "the " + userObj.feeling
 
 
 
@@ -397,10 +408,8 @@ new RGBELoader()
   })
 
  
-  scene.add(nameText);
+  scene.add(nameText, feelingText);
   
-	nameText.position.set(0, 0.67, -1.44);
-	// nameText.rotateX(-Math.PI / 3.3);
 
   const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -1026,8 +1035,10 @@ function animate() {
 
 
 if(socket && model){
-  nameText.position.set(model.position.x, 3.5, model.position.z);
+  nameText.position.set(model.position.x, 3.6, model.position.z);
   nameText.lookAt(camera.position)
+  feelingText.position.set(model.position.x, 3.35, model.position.z);
+  feelingText.lookAt(camera.position)
   userObj.position=model.position
   socket.emit('data',userObj)
   
@@ -1057,15 +1068,28 @@ socket.on('usersAll', data=>{
       if(!ids.includes(user.id)){ 
         ids.push(user.id)
         loader.load(`models/${user.feeling}.glb`, function (gltf) {
+
          user.model = gltf.scene;
          user.nameText = new Text()
          user.nameText.fontSize = 0.22;
+         user.nameText.font = '/assets/PixelifySans.ttf';
          user.nameText.outlineColor = 0xffffff;
          user.nameText.outlineWidth = 0.1
          user.nameText.color = 0x000000;
          user.nameText.anchorX = 'center';
          user.nameText.anchorY = 'middle';
          user.nameText.text = user.name
+
+         user.feelingText = new Text();
+         user.feelingText.fontSize = 0.12;
+         user.feelingText.font =  '/assets/PixelifySans.ttf';
+         user.feelingText.outlineColor = 0xffffff;
+         user.feelingText.outlineWidth = 0.1
+         user.feelingText.color = 0x000000;
+         user.feelingText.anchorX = 'center';
+         user.feelingText.anchorY = 'middle';
+         user.feelingText.text = "the " + user.feeling
+
           user.model.traverse(function (object) {
               if (object.isMesh) object.castShadow = true;
               if (object.isMesh) object.receiveShadow = true;
@@ -1073,7 +1097,7 @@ socket.on('usersAll', data=>{
       
           user.position = user.model.position
           
-          scene.add(user.model, user.nameText);
+          scene.add(user.model, user.nameText, user.feelingText);
 
 
           user.gltfAnimations = gltf.animations;
@@ -1101,8 +1125,10 @@ socket.on('usersAll', data=>{
 
             u.keys=user.keys
 
-            u.nameText.position.set(user.position.x, 3.5, user.position.z)
+            u.nameText.position.set(user.position.x, 3.6, user.position.z)
+            u.feelingText.position.set(user.position.x, 3.35, user.position.z)
             u.nameText.lookAt(camera.position)
+            u.feelingText.lookAt(camera.position)
           } 
      
           const userLI = document.createElement('li')
@@ -1130,6 +1156,7 @@ socket.on('usersAll', data=>{
 
         scene.remove(users[i].model)
         scene.remove(users[i].nameText)
+        scene.remove(users[i].feelingText)
         users.splice(i,1)
       }
     }
