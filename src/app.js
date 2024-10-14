@@ -366,6 +366,11 @@ const bagImgs2Texture = textureLoader.load('assets/bagImgs2.png')
 bagImgs2Texture.colorSpace = THREE.SRGBColorSpace
 const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
+const groundNormalTexture = textureLoader.load('assets/ground.jpg')
+groundNormalTexture.colorSpace = THREE.SRGBColorSpace
+groundNormalTexture.wrapS = THREE.RepeatWrapping
+groundNormalTexture.wrapT = THREE.RepeatWrapping
+groundNormalTexture.repeat.set(600,600)
 
 // ---------------text-------------
 
@@ -478,7 +483,7 @@ window.addEventListener('click',()=>{
   //floor
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(60, 60),
-    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide })
+    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide, normalMap: groundNormalTexture, normalScale: new THREE.Vector2(0.001,0.001) })
   );
   floor.rotation.x = -Math.PI * 0.5;
   floor.position.y = 0;
@@ -978,7 +983,7 @@ window.addEventListener('resize', () =>
   const sun = new THREE.DirectionalLight(0xffffee, 3)
   sun.castShadow = true;
   sun.position.set(0, 10, 5);
-  let side = 30
+  let side = 45
   sun.shadow.camera.left = side
   sun.shadow.camera.top = side
   sun.shadow.camera.right = -side
