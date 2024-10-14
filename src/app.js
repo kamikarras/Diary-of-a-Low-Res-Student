@@ -371,7 +371,7 @@ const bagImgs2AlphaTexture = textureLoader.load('assets/bagImgs2Alpha.png')
 
 
 const nameText = new Text();
-nameText.fontSize = 0.22;
+nameText.fontSize = 0.14;
 nameText.font =  '/assets/PixelifySans.ttf';
 nameText.outlineColor = 0xffffff;
 nameText.outlineWidth = 0.1
@@ -381,7 +381,7 @@ nameText.anchorY = 'middle';
 nameText.text = userObj.name
 
 const feelingText = new Text();
-feelingText.fontSize = 0.12;
+feelingText.fontSize = 0.09;
 feelingText.font =  '/assets/PixelifySans.ttf';
 feelingText.outlineColor = 0xffffff;
 feelingText.outlineWidth = 0.1
@@ -416,6 +416,7 @@ new RGBELoader()
   });
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.type = THREE.PCFShadowmapping
 
   renderer.toneMappingExposure = 0.4
 
@@ -536,10 +537,10 @@ cantMaterial.side = THREE.DoubleSide
     new THREE.PlaneGeometry(4,2),
     cantMaterial
   )
-cantMesh.position.x = 1
-cantMesh.position.z = 14
+cantMesh.position.x = 9
+cantMesh.position.z = -28
 cantMesh.position.y = 2
-cantMesh.rotation.y = Math.PI *1.25
+cantMesh.rotation.y = Math.PI *2
 
 cantMesh.castShadow = true
 cantMesh.recieveShadow = true
@@ -709,12 +710,15 @@ scene.add(aiMap)
     });
 
     kamiInBed.position.x = 4
-    kamiInBed.position.z = 10
-    kamiInBed.rotation.y = Math.PI *0.75
+    kamiInBed.position.z = -28
+    kamiInBed.rotation.y = Math.PI *1.5
 
     scene.add(kamiInBed);
 
 });
+
+
+
 
 
 
@@ -833,31 +837,66 @@ const particleColorTexture = textureLoader.load('assets/flower.png')
 let geometry = null
 let material = null
 let points = null
+let flowerMesh = null;
+
+//flower scene
+
+
 
 const generateFlowers = (flowers)=>{
-  if(points!==null){
+  if(flowerMesh!==null){
     geometry.dispose()
     material.dispose()
-    scene.remove(points)
+    scene.remove(flowerMesh)
 }
 
   const positions = new Float32Array(flowers.positions)
   const colors = new Float32Array(flowers.colors)
+  
 
-  geometry = new THREE.BufferGeometry()
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3))
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+  loader.load('models/flower.glb', function (gltf) {
+    const flowerModel = gltf.scene;
+    // flowerModel.scale.set(0.05,0.05,0.05)
+    flowerModel.traverse(function (object) {
+      
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+    const mesh = flowerModel.getObjectByName("cat")
+    mesh.castShadow = true;
+      mesh.receiveShadow = true;
+    
+    geometry = mesh.geometry.clone()
+    material = mesh.material
 
-  material = new THREE.PointsMaterial({
-    size: 0.7,
-    sizeAttenuation: true,
-    depthWrite: false,
-    vertexColors: true
-})
-material.transparent = true
-material.alphaMap =particleColorTexture
-points = new THREE.Points(geometry,material)
-scene.add(points)
+    flowerMesh = new THREE.InstancedMesh(geometry,material,positions.length)
+    flowerMesh.castShadow = true;
+      flowerMesh.receiveShadow = true;
+
+  
+
+      for(let i=0;i<positions.length;i+=3){
+        const dummy = new THREE.Matrix4()
+        const color = new THREE.Color()
+        const x = positions[i]
+        const y = Math.random(0) *0.3
+        const z = positions[i+2]
+        dummy.setPosition(x,y,z)
+
+        flowerMesh.setColorAt(i,dummy)
+        flowerMesh.setColorAt(i, color.set(colors[i],colors[i+1],colors[i+2]));
+        flowerMesh.setMatrixAt(i,dummy)
+      }
+      scene.add(flowerMesh)
+      
+    
+      
+    });
+    
+  
+
+
+
 
 }
 
@@ -886,11 +925,11 @@ window.addEventListener('resize', () =>
   
 
   //lights
-  const ambientLight = new THREE.AmbientLight("#ffffff", 0.4);
+  const ambientLight = new THREE.AmbientLight("#ffffff", 0.6);
   const sun = new THREE.DirectionalLight(0xffffee, 3)
   sun.castShadow = true;
   sun.position.set(0, 10, 5);
-  let side = 40
+  let side = 30
   sun.shadow.camera.left = side
   sun.shadow.camera.top = side
   sun.shadow.camera.right = -side
@@ -1040,9 +1079,9 @@ function animate() {
 
 
 if(socket && model){
-  nameText.position.set(model.position.x, 3.6, model.position.z);
+  nameText.position.set(model.position.x, 3.5, model.position.z);
   nameText.lookAt(camera.position)
-  feelingText.position.set(model.position.x, 3.35, model.position.z);
+  feelingText.position.set(model.position.x, 3.3, model.position.z);
   feelingText.lookAt(camera.position)
   userObj.position=model.position
   socket.emit('data',userObj)
@@ -1076,7 +1115,7 @@ socket.on('usersAll', data=>{
 
          user.model = gltf.scene;
          user.nameText = new Text()
-         user.nameText.fontSize = 0.22;
+         user.nameText.fontSize = 0.14;
          user.nameText.font = '/assets/PixelifySans.ttf';
          user.nameText.outlineColor = 0xffffff;
          user.nameText.outlineWidth = 0.1
@@ -1086,7 +1125,7 @@ socket.on('usersAll', data=>{
          user.nameText.text = user.name
 
          user.feelingText = new Text();
-         user.feelingText.fontSize = 0.12;
+         user.feelingText.fontSize = 0.09;
          user.feelingText.font =  '/assets/PixelifySans.ttf';
          user.feelingText.outlineColor = 0xffffff;
          user.feelingText.outlineWidth = 0.1
@@ -1130,7 +1169,7 @@ socket.on('usersAll', data=>{
 
             u.keys=user.keys
 
-            u.nameText.position.set(user.position.x, 3.6, user.position.z)
+            u.nameText.position.set(user.position.x, 3.5, user.position.z)
             u.feelingText.position.set(user.position.x, 3.35, user.position.z)
             u.nameText.lookAt(camera.position)
             u.feelingText.lookAt(camera.position)
