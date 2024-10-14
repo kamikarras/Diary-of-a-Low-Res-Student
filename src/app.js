@@ -810,6 +810,55 @@ loader.load('models/bag.glb', function (gltf) {
 
 });
 
+let gf;
+
+let mixer = null;
+//network gf scene
+loader.load('models/networkGF.glb', function (gltf) {
+  gf = gltf.scene;
+  console.log(gf)
+  const animations = gltf.animations
+  gf.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+
+  });
+  // gf.scale.set(0.5,0.5,0.5)
+  // gf.rotation.y = Math.PI /2
+  gf.position.x = 14
+  gf.position.y = 9
+  gf.position.z = 14
+  gf.lookAt(0,0,0)
+
+  mixer = new THREE.AnimationMixer(gf)
+
+  animations.forEach(animation=>{
+      mixer.clipAction(animation).play()
+  })
+
+
+
+  scene.add(gf);
+
+});
+//network gf text scene
+
+loader.load('models/gfText.glb', function (gltf) {
+  const gfText = gltf.scene;
+  gfText.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  gfText.position.x = 14
+  gfText.position.z = 16
+  gfText.rotation.y = Math.PI *1.3
+
+  scene.add(gfText);
+
+});
+
+
 
 //ponk scene
 
@@ -1034,10 +1083,18 @@ let currentIntersect = null
 
 // ANIMATE
 function animate() {
-  
+
+
   let mixerUpdateDelta = clock.getDelta();
   let eTime= clock.getElapsedTime();
     
+  if(mixer)
+    {
+        mixer.update(mixerUpdateDelta)
+    }
+  if(gf&&model){
+    gf.lookAt(model.position)
+  }
 
     // rayaster 
     raycaster.setFromCamera(mouse,camera)
@@ -1072,6 +1129,7 @@ function animate() {
     })
 
     welcomeFumes.position.y = Math.sin(eTime) * 0.1 +1.5
+
 
     controls.update()
     renderer.render(scene, camera);
