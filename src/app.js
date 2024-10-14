@@ -526,8 +526,8 @@ fumesMaterial.side = THREE.DoubleSide
     welcomeFumes.castShadow = true
     welcomeFumes.recieveShadow = true
 
-  clickableObjects.push(welcomeFumes)
-  scene.add(welcomeFumes)
+  // clickableObjects.push(welcomeFumes)
+  // scene.add(welcomeFumes)
 
 
 
@@ -567,7 +567,7 @@ cantMesh.recieveShadow = true
         amberMaterial
       )
     amberMesh.position.x = 14
-    amberMesh.position.z = -10
+    amberMesh.position.z = -22
     amberMesh.position.y = 1.4
     amberMesh.rotation.y = Math.PI
     
@@ -655,7 +655,7 @@ cantMesh.recieveShadow = true
   )
     welcomeBoard.castShadow = true
     welcomeBoard.receiveShadow = true
-    clickableObjects.push(welcomeBoard)
+    // clickableObjects.push(welcomeBoard)
 
     const welcomePaper = new THREE.Mesh(
       new THREE.BoxGeometry(2,1,.01),
@@ -676,7 +676,28 @@ cantMesh.recieveShadow = true
 
   welcomeSign.add(welcomeBoard,welcomeStake,welcomePaper)
 
-  scene.add(welcomeSign)
+  // scene.add(welcomeSign)
+
+  //welcome text
+
+
+loader.load('models/welcomeText.glb', function (gltf) {
+  const welcomeText = gltf.scene;
+  welcomeText.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+      // object.material.setAttribute('side', THREE.DoubleSide)
+      console.log(object.material)
+  });
+
+  welcomeText.position.x = 0
+  welcomeText.position.z = -5.5
+  welcomeText.position.y = 1
+  // welcomeText.rotation.y = Math.PI *1.5
+
+  scene.add(welcomeText);
+
+});
 
 
 
@@ -790,7 +811,7 @@ loader.load('models/dinner.glb', function (gltf) {
   });
 
   dinner.position.x = 12
-  dinner.position.z = -10
+  dinner.position.z = -22
   dinner.rotation.y = Math.PI * .5
 
   scene.add(dinner);
@@ -883,6 +904,24 @@ loader.load('models/ponk.glb', function (gltf) {
 
 });
 
+
+//ponk text scene
+
+loader.load('models/ponkText.glb', function (gltf) {
+  const ponkText = gltf.scene;
+  ponkText.traverse(function (object) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+  });
+
+  ponkText.position.x = 20.2
+  ponkText.position.z = -5.5
+  ponkText.position.y = 5
+  ponkText.rotation.y = Math.PI *1.5
+
+  scene.add(ponkText);
+
+});
 
 //flower particle system
 
@@ -1133,7 +1172,7 @@ function animate() {
       }
     })
 
-    welcomeFumes.position.y = Math.sin(eTime) * 0.1 +1.5
+    // welcomeFumes.position.y = Math.sin(eTime) * 0.1 +1.5
 
 
     controls.update()
