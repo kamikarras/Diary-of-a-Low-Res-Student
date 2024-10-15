@@ -500,7 +500,7 @@ window.addEventListener('click',()=>{
   //floor
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(60, 60),
-    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide, normalMap: groundNormalTexture, normalScale: new THREE.Vector2(0.001,0.001) })
+    new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide, normalMap: groundNormalTexture, normalScale: new THREE.Vector2(0.005,0.005) })
   );
   floor.rotation.x = -Math.PI * 0.5;
   floor.position.y = 0.01;
@@ -962,18 +962,136 @@ loader.load('models/ponkText.glb', function (gltf) {
 
 });
 
-//flower particle system
+//fence system
 
-const particleColorTexture = textureLoader.load('assets/flower.png')
+let fencePost = new THREE.InstancedMesh(
+  new THREE.BoxGeometry(0.3,2,0.3),
+  new THREE.MeshStandardMaterial({color:'white'}),
+  240
+)
+// fencePost.position.y = 1
+fencePost.position.z = -30
+fencePost.position.x = -30
+
+for(let i=-10;i<60;i+=2){
+//------
+const dummy = new THREE.Matrix4()
+const x = i
+const y = 1
+const z = 0
+dummy.setPosition(x,y,z)
+
+fencePost.setMatrixAt(i,dummy)
+
+}
+for(let i=1;i<60;i+=2){
+  //------
+  if(i>16&&i<34){
+
+  }else{
+    const dummy = new THREE.Matrix4()
+    const x = 60
+    const y = 1
+    const z = i
+    dummy.setPosition(x,y,z)
+
+    fencePost.setMatrixAt(i+60,dummy)
+  }
+  
+  
+  }
+
+  for(let i=1;i<60;i+=2){
+    //------
+    const dummy = new THREE.Matrix4()
+    const x = i
+    const y = 1
+    const z = 60
+    dummy.setPosition(x,y,z)
+    
+    fencePost.setMatrixAt(i+120,dummy)
+    
+    }
+
+    for(let i=1;i<60;i+=2){
+      //------
+      const dummy = new THREE.Matrix4()
+      const x = 0
+      const y = 1
+      const z = i
+      dummy.setPosition(x,y,z)
+      
+      fencePost.setMatrixAt(i+180,dummy)
+      
+      }
+
+
+
+scene.add(fencePost)
+
+const fenceBoardNorth = new THREE.Mesh(
+  new THREE.BoxGeometry(60,.2,.1),
+  new THREE.MeshStandardMaterial({color:"white"})
+)
+fenceBoardNorth.position.x = 0
+fenceBoardNorth.position.z = -30
+fenceBoardNorth.position.y =1.5
+
+scene.add(fenceBoardNorth)
+
+
+const fenceBoardSouth = new THREE.Mesh(
+  new THREE.BoxGeometry(60,.2,.1),
+  new THREE.MeshStandardMaterial({color:"white"})
+)
+fenceBoardSouth.position.x = 0
+fenceBoardSouth.position.z = 30
+fenceBoardSouth.position.y =1.5
+
+scene.add(fenceBoardSouth)
+
+
+const fenceBoardWest = new THREE.Mesh(
+  new THREE.BoxGeometry(.1,.2,60),
+  new THREE.MeshStandardMaterial({color:"white"})
+)
+fenceBoardWest.position.x = -30
+fenceBoardWest.position.z = 0
+fenceBoardWest.position.y =1.5
+
+scene.add(fenceBoardWest)
+
+
+const fenceBoardEast1 = new THREE.Mesh(
+  new THREE.BoxGeometry(.1,.2,24),
+  new THREE.MeshStandardMaterial({color:"white"})
+)
+fenceBoardEast1.position.x = 30
+fenceBoardEast1.position.z = 17
+fenceBoardEast1.position.y =1.5
+
+scene.add(fenceBoardEast1)
+
+
+const fenceBoardEast2 = new THREE.Mesh(
+  new THREE.BoxGeometry(.1,.2,16),
+  new THREE.MeshStandardMaterial({color:"white"})
+)
+fenceBoardEast2.position.x = 30
+fenceBoardEast2.position.z = -22
+fenceBoardEast2.position.y =1.5
+
+scene.add(fenceBoardEast2)
+
+
+
+//flower instancedMesh system
 
 let geometry = null
 let material = null
-let points = null
 let flowerMesh = null;
 
 //flower scene
-
-
 
 const generateFlowers = (flowers)=>{
   if(flowerMesh!==null){
@@ -988,7 +1106,6 @@ const generateFlowers = (flowers)=>{
 
   loader.load('models/flower.glb', function (gltf) {
     const flowerModel = gltf.scene;
-    // flowerModel.scale.set(0.05,0.05,0.05)
     flowerModel.traverse(function (object) {
       
       object.castShadow = true;
@@ -1014,7 +1131,6 @@ const generateFlowers = (flowers)=>{
         const z = positions[i+2]
         dummy.setPosition(x,y,z)
 
-        // flowerMesh.setColorAt(i,dummy)
         if(colors[i+1]=='1'&&colors[i+2]=='0'){
           
           flowerMesh.setColorAt(i, color.set(0.5,0.1,1));
@@ -1023,16 +1139,9 @@ const generateFlowers = (flowers)=>{
         }
         flowerMesh.setMatrixAt(i,dummy)
       }
-      scene.add(flowerMesh)
-      
-    
+      scene.add(flowerMesh)  
       
     });
-    
-  
-
-
-
 
 }
 
@@ -1255,7 +1364,7 @@ animate();
 socket.on('usersAll', data=>{
   onlineList.innerHTML = ''
   const myUserLI = document.createElement('li')
-  myUserLI.innerText = userObj.name + " the " + userObj.feeling
+  myUserLI.innerText = userObj.name + " - the " + userObj.feeling
   onlineList.appendChild(myUserLI)
     data.forEach(user=>{
       if(!ids.includes(user.id)){ 
