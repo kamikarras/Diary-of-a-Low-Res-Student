@@ -372,6 +372,21 @@ groundNormalTexture.wrapS = THREE.RepeatWrapping
 groundNormalTexture.wrapT = THREE.RepeatWrapping
 groundNormalTexture.repeat.set(600,600)
 
+const bricksNormalTexture = textureLoader.load('assets/bricksNormal.png')
+bricksNormalTexture.colorSpace = THREE.SRGBColorSpace
+bricksNormalTexture.wrapS = THREE.RepeatWrapping
+bricksNormalTexture.wrapT = THREE.RepeatWrapping
+bricksNormalTexture.repeat.set(10,10)
+
+const bricksAmbientOcclusionTexture = textureLoader.load('assets/bricksAmbientOcclusion.png')
+bricksAmbientOcclusionTexture.colorSpace = THREE.SRGBColorSpace
+bricksAmbientOcclusionTexture.wrapS = THREE.RepeatWrapping
+bricksAmbientOcclusionTexture.wrapT = THREE.RepeatWrapping
+bricksAmbientOcclusionTexture.repeat.set(10,10)
+
+
+
+
 // ---------------text-------------
 
 
@@ -488,7 +503,7 @@ window.addEventListener('click',()=>{
     new THREE.MeshStandardMaterial({ color: "#F89938", side: THREE.DoubleSide, normalMap: groundNormalTexture, normalScale: new THREE.Vector2(0.001,0.001) })
   );
   floor.rotation.x = -Math.PI * 0.5;
-  floor.position.y = 0;
+  floor.position.y = 0.01;
   floor.receiveShadow = true;
   scene.add(floor);
   const floor2 = new THREE.Mesh(
@@ -506,7 +521,7 @@ window.addEventListener('click',()=>{
     new THREE.MeshStandardMaterial({color:0xFFFFFF})
   )
   welcomeMat.rotation.x = -(Math.PI *.5)
-  welcomeMat.position.y = 0.01
+  welcomeMat.position.y = 0.02
   welcomeMat.receiveShadow = true;
   scene.add(welcomeMat)
 
@@ -703,6 +718,29 @@ loader.load('models/welcomeText.glb', function (gltf) {
 
 
 
+  //welcome text
+
+
+  loader.load('models/wireText.glb', function (gltf) {
+    const wireText = gltf.scene;
+    wireText.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        // object.material.setAttribute('side', THREE.DoubleSide)
+        console.log(object.material)
+    });
+  
+    wireText.position.x = -16.5
+    wireText.position.z = -20
+    wireText.position.y = 0
+    wireText.rotation.y = Math.PI *.25
+  
+    scene.add(wireText);
+  
+  });
+
+
+
 const aiMapMaterial = new THREE.MeshStandardMaterial({color:'white',side: THREE.DoubleSide})
 aiMapMaterial.map=AiTexture
 const aiMap = new THREE.Mesh(
@@ -752,11 +790,14 @@ scene.add(aiMap)
 
 //building scene
 
+let buildingMaterial = new THREE.MeshStandardMaterial({ color: "#aaa", side: THREE.DoubleSide, normalMap: bricksNormalTexture, normalScale: new THREE.Vector2(0.1,0.1), aoMap: bricksAmbientOcclusionTexture})
+
   loader.load('models/buildings.glb', function (gltf) {
     const buildings = gltf.scene;
     buildings.traverse(function (object) {
         object.castShadow = true;
         object.receiveShadow = true;
+        object.material = buildingMaterial;
     });
 
     buildings.scale.set(0.5,0.15,0.5)
