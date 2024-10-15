@@ -479,6 +479,8 @@ window.addEventListener('click',()=>{
   // Controls
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
+  controls.maxDistance = 20
+  controls.maxPolarAngle = Math.PI * 0.5
 
   //floor
   const floor = new THREE.Mesh(
