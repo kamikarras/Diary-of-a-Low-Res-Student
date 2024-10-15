@@ -703,8 +703,7 @@ loader.load('models/welcomeText.glb', function (gltf) {
   welcomeText.traverse(function (object) {
       object.castShadow = true;
       object.receiveShadow = true;
-      // object.material.setAttribute('side', THREE.DoubleSide)
-      console.log(object.material)
+    
   });
 
   welcomeText.position.x = 0
@@ -726,8 +725,7 @@ loader.load('models/welcomeText.glb', function (gltf) {
     wireText.traverse(function (object) {
         object.castShadow = true;
         object.receiveShadow = true;
-        // object.material.setAttribute('side', THREE.DoubleSide)
-        console.log(object.material)
+        
     });
   
     wireText.position.x = -16.5
@@ -885,15 +883,13 @@ let mixer = null;
 //network gf scene
 loader.load('models/networkGF.glb', function (gltf) {
   gf = gltf.scene;
-  console.log(gf)
   const animations = gltf.animations
   gf.traverse(function (object) {
       object.castShadow = true;
       object.receiveShadow = true;
 
   });
-  // gf.scale.set(0.5,0.5,0.5)
-  // gf.rotation.y = Math.PI /2
+
   gf.position.x = 14
   gf.position.y = 9
   gf.position.z = 14
@@ -1009,7 +1005,6 @@ const generateFlowers = (flowers)=>{
     flowerMesh.castShadow = true;
       flowerMesh.receiveShadow = true;
 
-  
 
       for(let i=0;i<positions.length;i+=3){
         const dummy = new THREE.Matrix4()
@@ -1019,8 +1014,13 @@ const generateFlowers = (flowers)=>{
         const z = positions[i+2]
         dummy.setPosition(x,y,z)
 
-        flowerMesh.setColorAt(i,dummy)
-        flowerMesh.setColorAt(i, color.set(colors[i],colors[i+1],colors[i+2]));
+        // flowerMesh.setColorAt(i,dummy)
+        if(colors[i+1]=='1'&&colors[i+2]=='0'){
+          
+          flowerMesh.setColorAt(i, color.set(0.5,0.1,1));
+        }else{
+          flowerMesh.setColorAt(i, color.set(colors[i],colors[i+1],colors[i+2]));
+        }
         flowerMesh.setMatrixAt(i,dummy)
       }
       scene.add(flowerMesh)
@@ -1061,11 +1061,11 @@ window.addEventListener('resize', () =>
   
 
   //lights
-  const ambientLight = new THREE.AmbientLight("#ffffff", 0.6);
+  const ambientLight = new THREE.AmbientLight("#ffffff", 0.5);
   const sun = new THREE.DirectionalLight(0xffffee, 3)
   sun.castShadow = true;
   sun.position.set(0, 10, 5);
-  let side = 45
+  let side = 50
   sun.shadow.camera.left = side
   sun.shadow.camera.top = side
   sun.shadow.camera.right = -side
@@ -1096,6 +1096,10 @@ loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
         if (object.isMesh) object.receiveShadow = true;
+        if(object.material && object.material.name=="Material.003"){
+          object.material.color.set(0.2,0,1)
+
+        }
     });
 
     userObj.position = model.position
