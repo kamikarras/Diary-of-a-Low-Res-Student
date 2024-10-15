@@ -1205,7 +1205,7 @@ loader.load(`models/${userObj.feeling}.glb`, function (gltf) {
     model.traverse(function (object) {
         if (object.isMesh) object.castShadow = true;
         if (object.isMesh) object.receiveShadow = true;
-        if(object.material && object.material.name=="Material.003"){
+        if(object.material && object.material.name=="Material.003"&&userObj.feeling=="creative"){
           object.material.color.set(0.2,0,1)
 
         }
@@ -1395,6 +1395,12 @@ socket.on('usersAll', data=>{
           user.model.traverse(function (object) {
               if (object.isMesh) object.castShadow = true;
               if (object.isMesh) object.receiveShadow = true;
+
+              if(object.material && object.material.name=="Material.003"&&user.feeling=="creative"){
+                object.material.color.set(0.2,0,1)
+      
+              }
+
           });
       
           user.position = user.model.position
