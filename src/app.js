@@ -497,6 +497,7 @@ window.addEventListener('click',()=>{
   controls.maxDistance = 20
   controls.maxPolarAngle = Math.PI * 0.5
 
+
   //floor
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(60, 60),
@@ -517,8 +518,8 @@ window.addEventListener('click',()=>{
 
   //welcome mat
   const welcomeMat = new THREE.Mesh(
-    new THREE.CircleGeometry(5,16),
-    new THREE.MeshStandardMaterial({color:0xFFFFFF})
+    new THREE.PlaneGeometry(7,7),
+    new THREE.MeshStandardMaterial({color:0xF15B66})
   )
   welcomeMat.rotation.x = -(Math.PI *.5)
   welcomeMat.position.y = 0.02
@@ -703,6 +704,10 @@ loader.load('models/welcomeText.glb', function (gltf) {
   welcomeText.traverse(function (object) {
       object.castShadow = true;
       object.receiveShadow = true;
+      if(object.material){
+        object.material.dithering = true
+        object.material.color.convertSRGBToLinear();
+      }
     
   });
 
@@ -717,7 +722,7 @@ loader.load('models/welcomeText.glb', function (gltf) {
 
 
 
-  //welcome text
+  //wiree text
 
 
   loader.load('models/wireText.glb', function (gltf) {
@@ -752,6 +757,134 @@ aiMap.rotation.y = Math.PI * -0.25
 
 scene.add(aiMap)
 
+
+
+
+  //tree
+
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree11 = gltf.scene;
+    tree11.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree11.position.x = 4
+    tree11.position.z = 45
+  
+    scene.add(tree11);
+  
+  });
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree12 = gltf.scene;
+    tree12.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree12.position.x = 7
+    tree12.position.z = 54
+    tree12.rotation.y = Math.PI 
+  
+    scene.add(tree12);
+  
+  });
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree13 = gltf.scene;
+    tree13.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree13.position.x = 15
+    tree13.position.z = 50
+    tree13.rotation.y = Math.PI *0.5
+  
+    scene.add(tree13);
+  
+  });
+  
+  
+
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree14 = gltf.scene;
+    tree14.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree14.position.z = 4
+    tree14.position.x = -45
+  
+    scene.add(tree14);
+  
+  });
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree15 = gltf.scene;
+    tree15.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree15.position.z = 7
+    tree15.position.x = -35
+    tree15.rotation.y = Math.PI 
+  
+    scene.add(tree15);
+  
+  });
+
+  loader.load('models/tree1.glb', function (gltf) {
+    const tree16 = gltf.scene;
+    tree16.traverse(function (object) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+        if(object.material){
+          object.material.dithering = true
+          object.material.color.convertSRGBToLinear();
+        }
+      
+    });
+  
+    tree16.position.z = 15
+    tree16.position.x = -40
+    tree16.rotation.y = Math.PI *0.5
+  
+    scene.add(tree16);
+  
+  });
+  
+  
 
 
 
