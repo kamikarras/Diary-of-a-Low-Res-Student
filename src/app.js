@@ -3,6 +3,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CharacterControls } from './characterControls';
+import { createOnlineBoard } from './OnlineBoard'
 import { GuestControls } from './guestControls';
 import { KeyDisplay } from './utils';
 import { Text } from 'troika-three-text';
@@ -41,7 +42,6 @@ let clickableObjects = []
 //flower svg
 const flower = document.querySelector("#intro-ground");
 let flowerRect = flower.getBoundingClientRect();
-let bodyRect = document.body.getBoundingClientRect();
 
 
 const kamiTest = document.querySelector("#kami-test");
@@ -312,7 +312,7 @@ const open = () => {
 
 
 //onlineboard
-
+// createOnlineBoard()
 const onlineBoard = document.createElement('div')
 onlineBoard.classList.add('onlineBoard')
 const onlineHeader = document.createElement('h3')
@@ -496,6 +496,7 @@ window.addEventListener('click',()=>{
   controls.enableDamping = true;
   controls.maxDistance = 20
   controls.maxPolarAngle = Math.PI * 0.5
+
 
 
   //floor
@@ -1573,7 +1574,7 @@ socket.on('usersAll', data=>{
           } 
      
           const userLI = document.createElement('li')
-          userLI.innerText = user.name + " the " + user.feeling
+          userLI.innerText = user.name + " - the " + user.feeling
           onlineList.appendChild(userLI)
         })
       }
